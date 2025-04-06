@@ -9,6 +9,7 @@ import SignUpScreen from '../screens/SignUpScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import AddressScreen from '../screens/AddressScreen';
 import PaymentScreen from '../screens/PaymentScreen';
+import ContactScreen from '../screens/ContactScreen';
 import { useAuth } from '../context/AuthContext';
 import ProductDetailScreen from '../screens/ProductDetailScreen';
 import CategoryListScreen from '../screens/CategoryListScreen';
@@ -25,6 +26,7 @@ export type AccountStackParamList = {
   ForgotPassword: undefined;
   Address: undefined;
   Payment: undefined;
+  Contact: undefined;
   // Add other account-related screens here like ForgotPassword
 };
 
@@ -54,6 +56,7 @@ const AccountNavigator = () => {
           <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} options={{ title: 'Mes Commandes' }} />
           <Stack.Screen name="Address" component={AddressScreen} options={{ title: 'Adresse' }} />
           <Stack.Screen name="Payment" component={PaymentScreen} options={{ title: 'Paiement' }} />
+          <Stack.Screen name="Contact" component={ContactScreen} options={{ title: 'Nous Contacter' }} />
         </>
       ) : (
         <>
