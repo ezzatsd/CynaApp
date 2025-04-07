@@ -1,0 +1,185 @@
+// This file is the single source of truth for your database schema.
+// It's readable enough that you can learn Prisma schema language in an afternoon.
+// Define your database connection and provider here. Replace with your actual connection string.
+datasource db {
+  provider = "postgresql" // Or "mongodb", "mysql", "sqlite", "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+// Define the Prisma client generator.
+generator client {
+  provider = "prisma-client-js"
+}
+
+// --- User and Authentication Models ---
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  name           String?
+  passwordHash   String    // Store the hash, not the plaintext password
+  emailVerified  DateTime? // For email confirmation
+  isAdmin        Boolean   @default(false) // For backoffice access
+  // twoFactorSecret String? // For 2FA
+  // twoFactorEnabled Boolean @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  orders         Order[]
+  addresses      Address[]
+  paymentMethods PaymentMethod[]
+  sessions       Session[] // For managing refresh tokens/sessions
+}
+
+// Model for storing session/refresh tokens securely
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique // The refresh token itself (or a hashed version)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+
+// --- Product Catalog Models ---
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique // Category names should likely be unique
+  image       String?
+  description String?
+  priority    Int       @default(0) // For home screen sorting
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  products Product[]
+}
+
+model Product {
+  id                 String    @id @default(cuid())
+  name               String
+  description        String    @db.Text // Use Text for potentially long descriptions
+  images             String[]  // URLs or identifiers
+  price              Decimal   @db.Decimal(10, 2) // Use Decimal for currency precision
+  // pricingModel     String?   // e.g., "per_user_monthly", "flat_annual"
+  // trialAvailable   Boolean   @default(false)
+  isAvailable        Boolean   @default(true)
+  isTopProduct       Boolean   @default(false)
+  priorityInCategory Int       @default(0)
+  features           String[]  @default([])
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict) // Prevent deleting category if products exist
+
+  orderItems OrderItem[]
+  // Add stock field if physical products are ever added
+  // stock Int? @default(0)
+}
+
+
+// --- User Address and Payment Models ---
+model Address {
+  id           String  @id @default(cuid())
+  firstName    String
+  lastName     String
+  address1     String
+  address2     String?
+  city         String
+  region       String
+  postalCode   String
+  country      String
+  phoneNumber  String
+  isDefaultBilling Boolean @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade) // Delete addresses if user is deleted
+
+  // An address might be used in multiple orders
+  ordersBilling Order[] @relation("AddressAsBilling")
+}
+
+model PaymentMethod {
+  id               String  @id @default(cuid())
+  type             String  // "card"
+  last4            String
+  brand            String  // "Visa"
+  expMonth         Int
+  expYear          Int
+  isDefault        Boolean @default(false)
+  // paymentProcessorId String? @unique // ID from Stripe/etc.
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade) // Delete payment methods if user is deleted
+}
+
+
+// --- Order Models ---
+model Order {
+  id                 String   @id @default(cuid())
+  orderDate          DateTime @default(now())
+  totalAmount        Decimal  @db.Decimal(10, 2)
+  status             OrderStatus @default(PROCESSING) // Use Enum for status
+  paymentMethodSummary String?  // e.g., "Visa **** 1234"
+  // paymentIntentId String? // ID from payment processor
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict) // Prevent user deletion if they have orders?
+
+  items OrderItem[]
+
+  billingAddressId String
+  // Explicit relation name needed because Address has multiple relations to Order
+  billingAddress   Address  @relation("AddressAsBilling", fields: [billingAddressId], references: [id])
+}
+
+model OrderItem {
+  id           String  @id @default(cuid())
+  quantity     Int
+  pricePerUnit Decimal @db.Decimal(10, 2) // Price at the time of order
+  productName  String  // Product name at the time of order
+  // Add subscription details if relevant (startDate, endDate, etc.)
+
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade) // Delete items if order is deleted
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict) // Prevent product deletion if ordered?
+
+  @@unique([orderId, productId]) // Ensure a product appears only once per order
+}
+
+enum OrderStatus {
+  PROCESSING // Initial state after checkout attempt
+  ACTIVE     // Payment confirmed, service active/subscription running
+  COMPLETED  // Subscription period ended or one-time service delivered
+  CANCELLED  // Order cancelled before completion/activation
+  FAILED     // Payment failed
+}
+
+
+// --- Contact Message Model ---
+model ContactMessage {
+    id          String      @id @default(cuid())
+    email       String
+    subject     String
+    message     String      @db.Text
+    isRead      Boolean     @default(false)
+    createdAt   DateTime    @default(now())
+    // respondedAt DateTime? 
+    // adminNotes  String?     @db.Text
+}
+
+// You might also add models for:
+// - Promotions / Discount Codes
+// - User Roles / Permissions
+// - Audit Logs
+// - Chat Transcripts (if storing them) 

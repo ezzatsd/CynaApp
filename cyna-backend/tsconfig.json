@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2016",                       // Target moderne mais compatible
+    "module": "CommonJS",                     // Standard pour Node.js
+    "outDir": "./dist",                       // Dossier de sortie pour le JS compilé
+    "rootDir": "./src",                      // Dossier racine des sources TS
+    "strict": true,                          // Active toutes les vérifications strictes
+    "esModuleInterop": true,                 // Permet l'import/export type ES6 avec modules CommonJS
+    "skipLibCheck": true,                    // Ignore la vérification des types dans les .d.ts
+    "forceConsistentCasingInFileNames": true, // Assure la cohérence de la casse des noms de fichiers
+    "resolveJsonModule": true,               // Permet d'importer des fichiers JSON
+    "sourceMap": true,                       // Génère les source maps pour le débogage
+    "baseUrl": ".",                          // Base pour les chemins
+    "paths": {
+      "@/*": ["src/*"]                      // Alias pour les imports (ex: @/services/...)
+    }
+  },
+  "include": ["src/**/*"],                   // Inclut tous les fichiers dans src
+  "exclude": ["node_modules", "**/*.spec.ts"] // Exclut node_modules et les fichiers de test
+} 
