@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import { Colors, Spacing, BorderRadius, Fonts } from '../constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -51,77 +50,67 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ closeModal }) => {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView 
-         behavior={Platform.OS === "ios" ? "padding" : "height"} 
-         style={styles.container}
-         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
-       >
-        {/* Header */}
-        <View style={styles.header}>
-           <Text style={styles.headerTitle}>Assistance Cyna</Text>
-           <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
-             <Text style={styles.closeButtonText}>Fermer</Text>
-           </TouchableOpacity>
-         </View>
+    <KeyboardAvoidingView 
+       behavior={Platform.OS === "ios" ? "padding" : "height"} 
+       style={[styles.container, { paddingTop: Platform.OS === 'ios' ? Spacing.lg : StatusBar.currentHeight }]}
+       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0} 
+     >
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Assistance Cyna</Text>
+        <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
+          <Text style={styles.closeButtonText}>Fermer</Text>
+        </TouchableOpacity>
+      </View>
 
-        {/* Message List */}
-        <FlatList
-          data={messages}
-          renderItem={renderMessage}
-          keyExtractor={(item) => item.id}
-          style={styles.messageList}
-          contentContainerStyle={{ paddingVertical: Spacing.md }}
-          inverted
-        />
-
-        {/* Input Area */}
-        <View style={styles.inputContainer}>
-          <TextInput
+      {/* Message List and Input Area remain inside KAV */}
+       <FlatList
+         data={messages}
+         renderItem={renderMessage}
+         keyExtractor={(item) => item.id}
+         style={styles.messageList}
+         contentContainerStyle={{ paddingVertical: Spacing.md }}
+         inverted 
+       />
+       <View style={styles.inputContainer}>
+         <TextInput
             style={styles.input}
             value={inputText}
             onChangeText={setInputText}
             placeholder="Tapez votre message..."
             placeholderTextColor={Colors.textSecondary}
-          />
-          <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-             <Ionicons name="send" size={20} color={Colors.white} />
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+         />
+         <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
+            <Ionicons name="send" size={20} color={Colors.white} />
+         </TouchableOpacity>
+       </View>
+     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
   container: {
     flex: 1,
+    backgroundColor: Colors.background, 
   },
   header: {
      flexDirection: 'row',
      justifyContent: 'space-between',
      alignItems: 'center',
-     paddingVertical: Spacing.md,
-     paddingHorizontal: Spacing.lg,
-     backgroundColor: Colors.surface,
-     borderBottomWidth: 1,
-     borderBottomColor: Colors.border,
+     paddingVertical: Spacing.sm,
+     paddingHorizontal: Spacing.md,
    },
-   headerTitle: {
-     fontSize: 18,
-     color: Colors.text,
-   },
-   closeButton: {
-      padding: Spacing.sm,
-    },
-    closeButtonText: {
-      fontSize: 16,
-      color: Colors.primary,
-    },
+  headerTitle: {
+    fontSize: 18,
+    color: Colors.text,
+  },
+  closeButton: {
+    padding: Spacing.sm,
+  },
+  closeButtonText: {
+    fontSize: 16,
+    color: Colors.primary,
+  },
   messageList: {
     flex: 1,
     paddingHorizontal: Spacing.md,

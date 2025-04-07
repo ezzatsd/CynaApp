@@ -7,6 +7,21 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack'; // Need
 import { MainTabParamList } from '../navigation/MainTabNavigator'; // Import MainTabParamList
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 
+// Define Carousel Slide type
+interface CarouselSlide {
+   id: string;
+   title: string;
+   description: string;
+   image: string; // URL
+}
+
+// Dummy Carousel Data (replace with data from backoffice later)
+const dummyCarouselData: CarouselSlide[] = [
+  { id: 'slide1', title: 'Nouvelle Protection EDR Pro', description: 'Découvrez notre solution EDR améliorée pour PME.', image: 'https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=1200' },
+  { id: 'slide2', title: 'Offre Spéciale SOC Managé', description: 'Sécurité 24/7 à un prix compétitif.', image: 'https://images.unsplash.com/photo-1618004912476-29818d81ae2e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=1200' },
+  { id: 'slide3', title: 'Migration XDR Simplifiée', description: 'Passez à une sécurité unifiée sans effort.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=1200' },
+];
+
 // Define navigation props using MainTabParamList
 type HomeScreenProps = NativeStackScreenProps<MainTabParamList, 'Home'>;
 
@@ -15,6 +30,8 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [topProducts, setTopProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0); // State for pagination dots
+  const flatListRef = React.useRef<FlatList>(null); // Ref for FlatList
 
   useEffect(() => {
     const loadData = async () => {
@@ -35,6 +52,30 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
     };
     loadData();
   }, []);
+
+  // Render Carousel Item
+   const renderCarouselItem = ({ item }: { item: CarouselSlide }) => (
+     <TouchableOpacity 
+       style={styles.carouselItem}
+       activeOpacity={0.9}
+       // onPress={() => { /* Navigate based on slide later */ }}
+     >
+       <Image source={{ uri: item.image }} style={styles.carouselImage} />
+       <View style={styles.carouselTextContainer}>
+          <Text style={styles.carouselTitle}>{item.title}</Text>
+          <Text style={styles.carouselDescription}>{item.description}</Text>
+        </View>
+     </TouchableOpacity>
+   );
+
+  // Handle scroll to update active slide index
+  const onViewableItemsChanged = React.useCallback(({ viewableItems }: any) => {
+     if (viewableItems.length > 0) {
+       setActiveSlideIndex(viewableItems[0].index);
+     }
+   }, []);
+   
+   const viewabilityConfig = React.useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
 
   const renderCategoryItem = ({ item }: { item: Category }) => (
     <TouchableOpacity
@@ -65,10 +106,33 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   }
 
   return (
-    <ScrollView style={styles.container}>
-       {/* Placeholder for Carousel */}
-        <View style={styles.placeholderBox}>
-           <Text style={styles.placeholderText}>Carrousel Promotionnel</Text>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+       {/* --- Carousel --- */}
+        <View style={styles.carouselContainer}>
+           <FlatList
+             ref={flatListRef}
+             data={dummyCarouselData}
+             renderItem={renderCarouselItem}
+             keyExtractor={(item) => item.id}
+             horizontal
+             pagingEnabled
+             showsHorizontalScrollIndicator={false}
+             onViewableItemsChanged={onViewableItemsChanged}
+             viewabilityConfig={viewabilityConfig}
+             style={styles.carouselFlatList}
+           />
+            {/* Pagination Dots */}
+            <View style={styles.paginationContainer}>
+              {dummyCarouselData.map((_, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.paginationDot,
+                    index === activeSlideIndex && styles.paginationDotActive,
+                  ]}
+                />
+              ))}
+            </View>
         </View>
 
        {/* Placeholder for Fixed Text */}
@@ -105,6 +169,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
 };
 
 const screenWidth = Dimensions.get('window').width;
+const carouselItemWidth = screenWidth; // Full width slides
 const categoryItemWidth = (screenWidth - Spacing.md * 3) / 2; // Padding: left, right, middle
 const topProductItemWidth = screenWidth * 0.4; // Adjust width for horizontal items
 
@@ -119,6 +184,58 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.background,
   },
+  carouselContainer: {
+     height: 200, // Adjust height as needed
+     marginBottom: Spacing.lg,
+   },
+   carouselFlatList: {
+     height: '100%',
+   },
+   carouselItem: {
+      width: carouselItemWidth,
+      height: '100%',
+      justifyContent: 'flex-end', // Text at the bottom
+    },
+   carouselImage: {
+      ...StyleSheet.absoluteFillObject,
+      width: '100%',
+      height: '100%',
+      resizeMode: 'cover',
+    },
+    carouselTextContainer: {
+        backgroundColor: Colors.overlay,
+        paddingVertical: Spacing.sm,
+        paddingHorizontal: Spacing.md,
+      },
+     carouselTitle: {
+        color: Colors.white,
+        fontSize: 18,
+        // fontFamily: Fonts.bold,
+        marginBottom: Spacing.xs,
+      },
+     carouselDescription: {
+        color: Colors.white,
+        fontSize: 14,
+        // fontFamily: Fonts.regular,
+      },
+    paginationContainer: {
+        position: 'absolute',
+        bottom: Spacing.sm,
+        left: 0,
+        right: 0,
+        flexDirection: 'row',
+        justifyContent: 'center',
+      },
+      paginationDot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: Colors.white + '80', // Semi-transparent white
+        marginHorizontal: Spacing.xs,
+      },
+      paginationDotActive: {
+        backgroundColor: Colors.white,
+      },
   placeholderBox: {
      height: 150,
      backgroundColor: Colors.surface,

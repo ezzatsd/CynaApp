@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Modal, StyleSheet, View } from 'react-native';
 import { AuthProvider } from './src/context/AuthContext';
@@ -49,7 +49,9 @@ export default function App() {
               transparent={false}
               onRequestClose={closeChatModal}
             >
-              <ChatScreen closeModal={closeChatModal} />
+              <SafeAreaView style={styles.modalContainer}>
+                <ChatScreen closeModal={closeChatModal} />
+              </SafeAreaView>
             </Modal>
           </I18nextProvider>
         </CartProvider>
