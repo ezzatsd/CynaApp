@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15 # Utilise une image PostgreSQL récente
+    container_name: cyna-postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: cynauser      # Nom d'utilisateur pour la BDD
+      POSTGRES_PASSWORD: cynapass  # Mot de passe pour la BDD (changez-le si vous voulez)
+      POSTGRES_DB: cynadb          # Nom de la base de données
+    ports:
+      - "5432:5432" # Mappe le port du conteneur au port de votre machine
+    volumes:
+      - cyna-postgres-data:/var/lib/postgresql/data # Persiste les données
+
+volumes:
+  cyna-postgres-data: # Définit un volume nommé pour stocker les données 
