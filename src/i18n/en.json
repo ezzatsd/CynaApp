@@ -1,0 +1,146 @@
+{
+    "common": {
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "back": "Back",
+        "save": "Save",
+        "cancel": "Cancel",
+        "submit": "Submit",
+        "ok": "Ok",
+        "yes": "Yes",
+        "no": "No"
+      },
+      "tabs": {
+        "home": "Home",
+        "categories": "Categories",
+        "search": "Search",
+        "cart": "Cart",
+        "account": "Account"
+      },
+      "home": {
+        "title": "Home",
+        "categoriesTitle": "Categories",
+        "topProductsTitle": "Top Products"
+      },
+       "category": {
+         "notFound": "Category not found."
+       },
+      "product": {
+        "detailTitle": "Product Detail",
+        "notFound": "Product not found.",
+        "description": "Description",
+        "features": "Technical Features",
+        "available": "Available immediately",
+        "unavailable": "Service temporarily unavailable",
+        "subscribeNow": "SUBSCRIBE NOW",
+        "serviceUnavailable": "SERVICE UNAVAILABLE",
+        "similarProducts": "Similar Services",
+        "addedToCart": "{{productName}} has been added to your cart."
+      },
+       "search": {
+         "placeholder": "Search for a service (e.g., EDR, SOC)...",
+         "noResults": "No results found for \"{{query}}\"."
+       },
+       "cart": {
+         "title": "Cart",
+         "empty": "Your cart is empty.",
+         "total": "Total ({{count}} item{{plural}}):",
+         "unitPrice": "/unit",
+         "checkout": "Proceed to Checkout",
+         "loginRequiredTitle": "Login Required",
+         "loginRequiredMessage": "You must be logged in to proceed to checkout.",
+         "loginAction": "Log In"
+       },
+       "auth": {
+         "loginTitle": "Login",
+         "signupTitle": "Sign Up",
+         "forgotPasswordTitle": "Forgot Password",
+         "emailPlaceholder": "Email address",
+         "passwordPlaceholder": "Password",
+         "passwordMinCharsPlaceholder": "Password (min. 8 characters)",
+         "namePlaceholder": "Full name",
+         "loginButton": "Log In",
+         "signupButton": "Sign Up",
+         "forgotPasswordButton": "Forgot password?",
+         "noAccountLink": "Don't have an account? Sign Up",
+         "alreadyAccountLink": "Already have an account? Log In",
+         "sendResetLinkButton": "Send Reset Link",
+         "backToLoginLink": "Back to Login",
+         "forgotPasswordInfo": "Enter your email to receive a password reset link.",
+         "loginErrorTitle": "Login Error",
+         "loginErrorMessage": "Incorrect email or password.",
+         "signupSuccessTitle": "Signup Successful",
+         "signupSuccessMessage": "Your account has been created. Please log in.",
+         "signupErrorTitle": "Signup Error",
+         "signupErrorGeneric": "Please check your information.",
+         "signupErrorName": "Name is required.",
+         "signupErrorEmail": "Email is required.",
+         "signupErrorPassword": "Password is required.",
+         "signupErrorPasswordLength": "Password must be at least 8 characters long.",
+         "passwordResetSentTitle": "Email Sent",
+         "passwordResetSentMessage": "If an account exists for this email, a reset link has been sent.",
+         "fieldRequiredError": "Please fill in all fields.",
+         "invalidEmailError": "Please enter a valid email address.",
+         "logoutButton": "Log Out",
+         "logoutProgress": "Logging out..."
+       },
+        "account": {
+          "title": "My Account",
+          "welcome": "Hello, {{name}}!",
+          "settingsButton": "Account Settings",
+          "ordersButton": "My Orders",
+          "loggedInInfo": "Log in to access your account."
+       },
+        "settings": {
+          "title": "Settings",
+          "personalInfo": "Personal Information",
+          "passwordChange": "Change Password",
+          "addressBook": "Address Book",
+          "paymentMethods": "Payment Methods",
+          "currentPasswordPlaceholder": "Enter your current password",
+          "newPasswordPlaceholder": "Minimum 8 characters",
+          "confirmPasswordPlaceholder": "Re-type new password",
+          "addressListPlaceholder": "List of saved addresses here...",
+          "addAddressButton": "+ Add New Address",
+          "paymentListPlaceholder": "List of saved payment methods here...",
+          "addPaymentButton": "+ Add Payment Method",
+          "saveChangesButton": "Save Changes",
+          "saveConfirmTitle": "Changes",
+          "saveConfirmMessage": "Save logic to be implemented.",
+          "addAddressTitle": "Add Address",
+          "addAddressMessage": "Navigate to address form to be implemented.",
+          "addPaymentTitle": "Add Payment",
+          "addPaymentMessage": "Navigate to payment form to be implemented."
+        },
+        "orders": {
+          "title": "My Orders",
+          "orderId": "Order #{{id}}",
+          "total": "Total: €{{amount}}",
+          "paidWith": "Paid with: {{summary}}",
+          "downloadInvoice": "Download Invoice (PDF)",
+          "errorLoading": "Could not load order history.",
+          "errorDownloading": "Could not download invoice.",
+          "downloadConfirmTitle": "Download",
+          "downloadConfirmMessage": "Invoice download simulated for order {{id}}.",
+          "downloadErrorGeneric": "An error occurred during download.",
+          "empty": "No orders found."
+        },
+        "contact": {
+          "title": "Contact Us",
+          "info": "Need help or have a question? Use the form below or contact us via our chatbot.",
+          "emailLabel": "Your email address",
+          "subjectLabel": "Subject",
+          "messageLabel": "Your message",
+          "subjectPlaceholder": "e.g., Question about EDR Pro subscription",
+          "messagePlaceholder": "Write your message here...",
+          "sendButton": "Send Message",
+          "sendingButton": "Sending...",
+          "orSeparator": "OR",
+          "chatbotButton": "Contact Me (Chatbot)",
+          "submitSuccessTitle": "Message Sent",
+          "submitSuccessMessage": "Thank you for contacting us. We will get back to you soon.",
+          "chatbotInfoTitle": "Chatbot",
+          "chatbotInfoMessage": "The interactive chatbot will be available here soon!"
+        }
+  }
+  

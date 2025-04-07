@@ -5,11 +5,13 @@ import { Category, Product } from '../types/entities';
 import * as ProductService from '../services/ProductService';
 import { NativeStackScreenProps } from '@react-navigation/native-stack'; // Needed for navigation prop type
 import { MainTabParamList } from '../navigation/MainTabNavigator'; // Import MainTabParamList
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 // Define navigation props using MainTabParamList
 type HomeScreenProps = NativeStackScreenProps<MainTabParamList, 'Home'>;
 
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
+  const { t } = useTranslation(); // Initialize translation hook
   const [categories, setCategories] = useState<Category[]>([]);
   const [topProducts, setTopProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -75,7 +77,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
        </View>
 
       {/* Categories Grid */}
-      <Text style={styles.sectionTitle}>Catégories</Text>
+      <Text style={styles.sectionTitle}>{t('home.categoriesTitle')}</Text>
       <FlatList
         data={categories}
         renderItem={renderCategoryItem}
@@ -86,7 +88,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
       />
 
       {/* Top Products */}
-      <Text style={styles.sectionTitle}>Les Top Produits du moment</Text>
+      <Text style={styles.sectionTitle}>{t('home.topProductsTitle')}</Text>
        <FlatList
          data={topProducts}
          renderItem={renderTopProductItem}
