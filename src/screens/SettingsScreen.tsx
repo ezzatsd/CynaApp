@@ -4,6 +4,7 @@ import { Colors, Spacing, BorderRadius, Fonts } from '../constants/theme';
 import { useAuth } from '../context/AuthContext';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AccountStackParamList } from '../navigation/AccountNavigator';
+import LanguageSelector from '../components/LanguageSelector';
 
 type Props = NativeStackScreenProps<AccountStackParamList, 'Settings'>;
 
@@ -38,6 +39,9 @@ const SettingsScreen = ({ navigation }: Props) => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+      <Text style={styles.sectionTitle}>Langue</Text>
+      <LanguageSelector />
+
       <Text style={styles.sectionTitle}>Informations personnelles</Text>
       <View style={styles.card}>
          <Text style={styles.label}>Nom complet</Text>

@@ -1,23 +1,57 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import MainTabNavigator from './src/navigation/MainTabNavigator';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import { Modal, StyleSheet, View } from 'react-native';
 import { AuthProvider } from './src/context/AuthContext';
 import { CartProvider } from './src/context/CartContext';
-import './src/i18n'; // Initialize i18next
+import MainTabNavigator from './src/navigation/MainTabNavigator';
+import FloatingChatButton from './src/components/FloatingChatButton';
+import ChatScreen from './src/screens/ChatScreen';
+import { Colors } from './src/constants/theme';
+import { I18nextProvider } from 'react-i18next';
+import i18n, { updateLayoutDirection } from './src/i18n';
 
 export default function App() {
+  const [isChatModalVisible, setIsChatModalVisible] = useState(false);
+
+  const openChatModal = () => setIsChatModalVisible(true);
+  const closeChatModal = () => setIsChatModalVisible(false);
+
+  useEffect(() => {
+    updateLayoutDirection(i18n.language);
+  }, []);
+
   return (
     <SafeAreaProvider>
       <AuthProvider>
         <CartProvider>
-          <NavigationContainer>
-            <MainTabNavigator />
-          </NavigationContainer>
+          <I18nextProvider i18n={i18n}>
+            <NavigationContainer>
+              <MainTabNavigator />
+            </NavigationContainer>
+            <FloatingChatButton onPress={openChatModal} />
+            <Modal
+              visible={isChatModalVisible}
+              animationType="slide"
+              transparent={false}
+              onRequestClose={closeChatModal}
+            >
+              <SafeAreaView style={styles.modalContainer}>
+                <ChatScreen closeModal={closeChatModal} />
+              </SafeAreaView>
+            </Modal>
+          </I18nextProvider>
         </CartProvider>
       </AuthProvider>
       <StatusBar style="auto" />
     </SafeAreaProvider>
   );
-} 
+}
+
+const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+}); 
