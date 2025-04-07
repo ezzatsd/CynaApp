@@ -25,6 +25,14 @@ export const dummyCategories: Category[] = [
   },
 ];
 
+// Example images from Unsplash (replace with actual relevant images)
+const edrImage = 'https://images.unsplash.com/photo-1550751827-41378cb4f4da?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600'; // Tech/Server room
+const edrImage2 = 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600'; // Code/Matrix
+const xdrImage = 'https://images.unsplash.com/photo-1587831990711-23ca6441447b?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600'; // Multiple screens/data
+const xdrImage2 = 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600'; // Laptop with code
+const socImage = 'https://images.unsplash.com/photo-1611606063065-ee7946f0b7a1?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600'; // Security padlock/icons
+const socImage2 = 'https://images.unsplash.com/photo-1521791055366-0d553872125f?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600'; // Team working in office
+
 // --- Dummy Products ---
 export const dummyProducts: Product[] = [
   // EDR Products
@@ -33,10 +41,7 @@ export const dummyProducts: Product[] = [
     name: 'Cyna EDR Pro',
     description: 'Protection EDR complète pour PME avec analyse comportementale et réponse automatisée. Idéal pour les entreprises cherchant une solution robuste et facile à gérer.',
     categoryId: 'cat-edr',
-    images: [
-      'https://via.placeholder.com/600x400.png?text=EDR+Pro+1',
-      'https://via.placeholder.com/600x400.png?text=EDR+Pro+2',
-    ],
+    images: [edrImage, edrImage2],
     price: 49.99, // Example monthly price per endpoint
     isAvailable: true,
     isTopProduct: true,
@@ -48,7 +53,7 @@ export const dummyProducts: Product[] = [
     name: 'Cyna EDR Enterprise',
     description: 'Solution EDR de niveau entreprise avec threat hunting avancé et intégrations personnalisées. Conçue pour les grandes organisations avec des besoins de sécurité complexes.',
     categoryId: 'cat-edr',
-    images: ['https://via.placeholder.com/600x400.png?text=EDR+Ent+1'],
+    images: [edrImage2],
     price: 99.99,
     isAvailable: true,
     isTopProduct: false,
@@ -60,7 +65,7 @@ export const dummyProducts: Product[] = [
       name: 'Cyna EDR Basic (Bientôt disponible)',
       description: 'Protection essentielle des terminaux pour les très petites entreprises.',
       categoryId: 'cat-edr',
-      images: ['https://via.placeholder.com/600x400.png?text=EDR+Basic'],
+      images: [edrImage],
       price: 19.99,
       isAvailable: false, // Not available yet
       isTopProduct: false,
@@ -73,10 +78,7 @@ export const dummyProducts: Product[] = [
     name: 'Cyna XDR Unified',
     description: 'Plateforme XDR unifiée intégrant la sécurité des terminaux, du réseau et du cloud. Offre une vue à 360° des menaces et une réponse coordonnée.',
     categoryId: 'cat-xdr',
-    images: [
-      'https://via.placeholder.com/600x400.png?text=XDR+Unified+1',
-      'https://via.placeholder.com/600x400.png?text=XDR+Unified+2',
-    ],
+    images: [xdrImage, xdrImage2],
     price: 149.99, // Example monthly price per organization (base)
     isAvailable: true,
     isTopProduct: true,
@@ -88,7 +90,7 @@ export const dummyProducts: Product[] = [
     name: 'Cyna XDR Advanced',
     description: 'Capacités XDR étendues avec IA/ML pour la détection précoce et analyses prédictives.',
     categoryId: 'cat-xdr',
-    images: ['https://via.placeholder.com/600x400.png?text=XDR+Adv'],
+    images: [xdrImage2],
     price: 249.99,
     isAvailable: true,
     isTopProduct: false,
@@ -101,7 +103,7 @@ export const dummyProducts: Product[] = [
     name: 'Cyna Managed SOC - Essential',
     description: 'Service SOC managé 24/7 pour la surveillance et la réponse aux incidents de sécurité. Inclut le monitoring des logs et les alertes de base.',
     categoryId: 'cat-soc',
-    images: ['https://via.placeholder.com/600x400.png?text=SOC+Ess'],
+    images: [socImage],
     price: 999.00, // Example monthly retainer
     isAvailable: true,
     isTopProduct: false,
@@ -112,7 +114,7 @@ export const dummyProducts: Product[] = [
     name: 'Cyna Managed SOC - Premium',
     description: 'Service SOC complet avec threat intelligence, chasse aux menaces et rapports personnalisés.',
     categoryId: 'cat-soc',
-    images: ['https://via.placeholder.com/600x400.png?text=SOC+Prem'],
+    images: [socImage2],
     price: 2499.00,
     isAvailable: true,
     isTopProduct: true,

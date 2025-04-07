@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Spacing, BorderRadius, Fonts } from '../constants/theme';
+import { Ionicons } from '@expo/vector-icons';
 
 interface Message {
   id: string;
@@ -49,52 +51,55 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ closeModal }) => {
   );
 
   return (
-    <KeyboardAvoidingView 
-       behavior={Platform.OS === "ios" ? "padding" : "height"} 
-       style={styles.container}
-       keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0} // Adjust offset if needed
-     >
-      {/* Header */}
-      <View style={styles.header}>
-         <Text style={styles.headerTitle}>Assistance Cyna</Text>
-         <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
-           <Text style={styles.closeButtonText}>Fermer</Text>
-         </TouchableOpacity>
-       </View>
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView 
+         behavior={Platform.OS === "ios" ? "padding" : "height"} 
+         style={styles.container}
+         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+       >
+        {/* Header */}
+        <View style={styles.header}>
+           <Text style={styles.headerTitle}>Assistance Cyna</Text>
+           <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
+             <Text style={styles.closeButtonText}>Fermer</Text>
+           </TouchableOpacity>
+         </View>
 
-      {/* Message List */}
-      <FlatList
-        data={messages}
-        renderItem={renderMessage}
-        keyExtractor={(item) => item.id}
-        style={styles.messageList}
-        contentContainerStyle={{ paddingVertical: Spacing.md }}
-        inverted // Show latest messages at the bottom
-      />
-
-      {/* Input Area */}
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          value={inputText}
-          onChangeText={setInputText}
-          placeholder="Tapez votre message..."
-          placeholderTextColor={Colors.textSecondary}
+        {/* Message List */}
+        <FlatList
+          data={messages}
+          renderItem={renderMessage}
+          keyExtractor={(item) => item.id}
+          style={styles.messageList}
+          contentContainerStyle={{ paddingVertical: Spacing.md }}
+          inverted
         />
-        <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-          {/* Replace with Send icon later */}
-          <Text style={styles.sendButtonText}>Envoyer</Text>
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+
+        {/* Input Area */}
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            value={inputText}
+            onChangeText={setInputText}
+            placeholder="Tapez votre message..."
+            placeholderTextColor={Colors.textSecondary}
+          />
+          <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
+             <Ionicons name="send" size={20} color={Colors.white} />
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: Colors.background,
-    // Removed padding to allow KeyboardAvoidingView to manage it
+  },
+  container: {
+    flex: 1,
   },
   header: {
      flexDirection: 'row',
@@ -108,7 +113,6 @@ const styles = StyleSheet.create({
    },
    headerTitle: {
      fontSize: 18,
-     // fontFamily: Fonts.bold,
      color: Colors.text,
    },
    closeButton: {
@@ -117,7 +121,6 @@ const styles = StyleSheet.create({
     closeButtonText: {
       fontSize: 16,
       color: Colors.primary,
-      // fontFamily: Fonts.regular,
     },
   messageList: {
     flex: 1,
@@ -128,19 +131,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.md,
-    maxWidth: '80%', // Prevent bubbles from taking full width
+    maxWidth: '80%',
   },
   userBubble: {
     backgroundColor: Colors.primary,
     alignSelf: 'flex-end',
-    borderBottomRightRadius: BorderRadius.sm, // Different corner for user
+    borderBottomRightRadius: BorderRadius.sm,
   },
   botBubble: {
     backgroundColor: Colors.surface,
     alignSelf: 'flex-start',
     borderWidth: 1,
     borderColor: Colors.border,
-    borderBottomLeftRadius: BorderRadius.sm, // Different corner for bot
+    borderBottomLeftRadius: BorderRadius.sm,
   },
   userText: {
     color: Colors.white,
@@ -173,16 +176,12 @@ const styles = StyleSheet.create({
   },
   sendButton: {
     height: 45,
-    paddingHorizontal: Spacing.md,
+    width: 45,
+    paddingHorizontal: 0,
     backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: BorderRadius.full,
-  },
-  sendButtonText: {
-    color: Colors.white,
-    fontSize: 16,
-    // fontFamily: Fonts.bold,
   },
 });
 

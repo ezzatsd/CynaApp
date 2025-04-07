@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MainTabParamList } from '../navigation/MainTabNavigator';
 import { useAuth } from '../context/AuthContext'; // Import useAuth to check login status
+import { Ionicons } from '@expo/vector-icons';
 
 // Define navigation props
 type CartScreenNavigationProp = BottomTabNavigationProp<MainTabParamList, 'Cart'>;
@@ -64,8 +65,7 @@ const CartScreen = () => {
          <QuantitySelector item={item} />
       </View>
        <TouchableOpacity onPress={() => removeFromCart(item.product.id)} style={styles.removeButton}>
-          {/* Replace with an icon later */}
-         <Text style={styles.removeButtonText}>X</Text>
+          <Ionicons name="trash-outline" size={22} color={Colors.error} />
        </TouchableOpacity>
     </View>
   );
@@ -187,11 +187,7 @@ const styles = StyleSheet.create({
        padding: Spacing.md,
        justifyContent: 'center',
        alignItems: 'center',
-     },
-     removeButtonText: {
-       color: Colors.error,
-       fontSize: 18,
-       fontWeight: 'bold',
+       width: 50,
      },
   footer: {
     borderTopWidth: 1,

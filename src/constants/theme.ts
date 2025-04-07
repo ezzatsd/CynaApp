@@ -1,22 +1,33 @@
+import { Platform } from 'react-native';
+
 export const Colors = {
-  primary: '#0052CC', // Example primary color (Blue)
-  secondary: '#FFAB00', // Example secondary color (Amber)
+  primary: '#6200EE', // Deeper Purple
+  primaryVariant: '#3700B3', // Darker Purple
+  secondary: '#03DAC6', // Teal Accent
+  secondaryVariant: '#018786', // Darker Teal
   background: '#FFFFFF',
-  surface: '#F8F9FA',
+  surface: '#FFFFFF',
+  card: '#F8F9FA', // Slightly off-white for cards
   text: '#212529',
   textSecondary: '#6C757D',
-  error: '#DC3545',
-  success: '#28A745',
-  border: '#DEE2E6',
-  disabled: '#ADB5BD',
+  textOnPrimary: '#FFFFFF',
+  textOnSecondary: '#000000',
+  error: '#B00020', // Material Error Red
+  success: '#28A745', // Keep existing green
+  border: '#E0E0E0', // Lighter border
+  disabled: '#BDBDBD', // Lighter disabled state
   white: '#FFFFFF',
   black: '#000000',
+  overlay: 'rgba(0, 0, 0, 0.4)', // Overlay for images
+  lightGrey: '#F5F5F5', // For backgrounds like inputs
 };
 
 export const Fonts = {
-  regular: 'System', // Use system default for simplicity, replace with custom font later
-  bold: 'System',    // Use system default
-  // Add other font weights/styles as needed
+  regular: Platform.OS === 'ios' ? 'System' : 'sans-serif', 
+  medium: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium', // Added medium
+  bold: Platform.OS === 'ios' ? 'System' : 'sans-serif', // Use system bold variations
+  // For actual bold on Android use fontFamily: 'sans-serif', fontWeight: 'bold'
+  // Or preferably, load custom fonts (e.g., Inter-Regular, Inter-Bold)
 };
 
 export const Spacing = {

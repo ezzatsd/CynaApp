@@ -1,8 +1,7 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet, Text } from 'react-native';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 import { Colors, Spacing, BorderRadius } from '../constants/theme';
-// Import icon library later
-// import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 interface FloatingChatButtonProps {
   onPress: () => void;
@@ -11,8 +10,7 @@ interface FloatingChatButtonProps {
 const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onPress }) => {
   return (
     <TouchableOpacity style={styles.button} onPress={onPress} activeOpacity={0.8}>
-       {/* Removed comments, ensure only Text component is direct child if needed */}
-       <Text style={{color: 'white', fontSize: 24}}>?</Text>
+       <Ionicons name="chatbubble-ellipses-outline" size={28} color={Colors.white} />
     </TouchableOpacity>
   );
 };

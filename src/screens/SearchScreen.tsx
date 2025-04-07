@@ -8,6 +8,7 @@ import { MainTabParamList } from '../navigation/MainTabNavigator';
 import { CategoryStackParamList } from '../navigation/CategoryStackNavigator'; // To navigate to ProductDetail
 import { CompositeScreenProps, useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons'; // Import icons
 
 // Define navigation props
 type SearchScreenNavigationProp = BottomTabNavigationProp<MainTabParamList, 'Search'>;
@@ -79,8 +80,7 @@ const SearchScreen = () => {
             placeholderTextColor={Colors.textSecondary}
           />
           <TouchableOpacity style={styles.searchButton} onPress={handleSearch} disabled={isLoading}>
-             {/* Use an icon here later */} 
-             <Text style={styles.searchButtonText}>Ok</Text>
+              <Ionicons name="search" size={20} color={Colors.white} />
            </TouchableOpacity>
       </View>
       
@@ -136,17 +136,13 @@ const styles = StyleSheet.create({
     marginRight: Spacing.sm,
   },
    searchButton: {
+      width: 45,
       height: 45,
-      paddingHorizontal: Spacing.md,
+      paddingHorizontal: 0,
       backgroundColor: Colors.primary,
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: BorderRadius.md,
-    },
-    searchButtonText: {
-      color: Colors.white,
-      fontSize: 16,
-      // fontFamily: Fonts.bold,
     },
 //    filterPlaceholder: {
 //        padding: Spacing.md,
