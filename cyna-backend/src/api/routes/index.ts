@@ -1,14 +1,13 @@
 // This file aggregates all routers and exports a single router for app.ts
 import { Router } from 'express';
-// Import individual routers as they are created
-// import authRouter from './routes/auth.routes';
-// import productRouter from './routes/product.routes';
+import authRouter from './auth.routes'; // Corrected import path
+// import productRouter from './product.routes';
 // ... etc ...
 
 const apiRouter = Router();
 
 // Mount individual routers
-// apiRouter.use('/auth', authRouter);
+apiRouter.use('/auth', authRouter); // Mount auth routes under /api/auth
 // apiRouter.use('/products', productRouter);
 // ... etc ...
 
