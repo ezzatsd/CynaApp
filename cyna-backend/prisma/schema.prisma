@@ -129,19 +129,18 @@ model Order {
   id                 String   @id @default(cuid())
   orderDate          DateTime @default(now())
   totalAmount        Decimal  @db.Decimal(10, 2)
-  status             OrderStatus @default(PROCESSING) // Use Enum for status
-  paymentMethodSummary String?  // e.g., "Visa **** 1234"
-  // paymentIntentId String? // ID from payment processor
+  status             OrderStatus @default(PENDING_PAYMENT) // Nouveau statut initial
+  paymentMethodSummary String?  
+  paymentIntentId    String?  @unique // ID de l'intention de paiement Stripe
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
   userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict) // Prevent user deletion if they have orders?
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
 
   items OrderItem[]
 
   billingAddressId String
-  // Explicit relation name needed because Address has multiple relations to Order
   billingAddress   Address  @relation("AddressAsBilling", fields: [billingAddressId], references: [id])
 }
 
@@ -162,11 +161,12 @@ model OrderItem {
 }
 
 enum OrderStatus {
-  PROCESSING // Initial state after checkout attempt
-  ACTIVE     // Payment confirmed, service active/subscription running
-  COMPLETED  // Subscription period ended or one-time service delivered
-  CANCELLED  // Order cancelled before completion/activation
-  FAILED     // Payment failed
+  PENDING_PAYMENT // En attente de paiement (nouveau)
+  PROCESSING      // Ancien statut initial, maintenant inutile ? Ou pour après paiement ? A redéfinir
+  ACTIVE          // Paiement confirmé, service actif/souscription
+  COMPLETED       // Période terminée ou service livré
+  CANCELLED       // Annulé avant paiement/activation
+  FAILED          // Paiement échoué
 }
 
 

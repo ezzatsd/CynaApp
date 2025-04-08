@@ -6,17 +6,30 @@ export class OrderController {
 
   /**
    * POST /api/orders
-   * Crée une nouvelle commande pour l'utilisateur authentifié.
+   * Crée une intention de paiement et une commande préliminaire.
+   * Renvoie le client_secret de l'intention et l'ID de la commande.
    */
   static async createOrder(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       if (!req.user) {
         throw new ApiError(401, 'Authentication required');
       }
-      // Données validées par Zod
-      const orderData = req.body;
-      const newOrder = await OrderService.createOrder(req.user.id, orderData);
-      res.status(201).json(newOrder);
+      const orderData = req.body; // Données validées par Zod
+      
+      // Appeler la nouvelle méthode du service
+      const { clientSecret, orderId } = await OrderService.createOrderAndPaymentIntent(req.user.id, orderData);
+      
+      if (!clientSecret) {
+          // Ce cas peut arriver si l'initialisation de Stripe a échoué ou autre erreur non prévue
+          throw new ApiError(500, "Could not initialize payment.");
+      }
+
+      // Renvoyer le secret client et l'ID de commande au frontend
+      res.status(201).json({ 
+          message: "Payment intent created successfully.",
+          clientSecret: clientSecret, 
+          orderId: orderId 
+      });
     } catch (error) {
       next(error);
     }

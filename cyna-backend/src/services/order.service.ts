@@ -1,5 +1,19 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient, Prisma, OrderStatus } from '@prisma/client';
 import { ApiError } from '../errors/ApiError';
+import Stripe from 'stripe';
+import config from '../config'; // Importer la config pour les clés API
+
+// Initialiser Stripe AVEC la clé secrète
+// Vérifier si la clé existe avant d'initialiser
+let stripe: Stripe | null = null;
+if (config.stripeSecretKey) {
+    stripe = new Stripe(config.stripeSecretKey, {
+        apiVersion: '2024-06-20' as any, // Forcer le type pour contourner l'erreur de typage
+        typescript: true,
+    });
+} else {
+    console.error('Stripe Secret Key is not configured. Payment processing will fail.');
+}
 
 const prisma = new PrismaClient();
 
@@ -17,88 +31,119 @@ interface CreateOrderInput {
 export class OrderService {
 
   /**
-   * Crée une nouvelle commande pour un utilisateur.
-   * Utilise une transaction pour assurer l'atomicité.
+   * Crée une intention de paiement Stripe et une commande en BDD (statut PENDING_PAYMENT).
+   * Retourne le client_secret de l'intention pour que le frontend puisse finaliser le paiement.
    */
-  static async createOrder(userId: string, orderData: CreateOrderInput) {
-    const { items, billingAddressId, paymentMethodSummary } = orderData;
-
-    // 1. Vérifier que l'adresse de facturation appartient bien à l'utilisateur
-    const address = await prisma.address.findUnique({
-        where: { id: billingAddressId },
-    });
-    if (!address || address.userId !== userId) {
-        throw new ApiError(400, `Invalid billingAddressId: Address not found or does not belong to the user.`);
+  static async createOrderAndPaymentIntent(userId: string, orderData: CreateOrderInput): Promise<{ clientSecret: string | null; orderId: string }> {
+    if (!stripe) {
+        throw new ApiError(503, 'Payment service is temporarily unavailable.');
     }
 
-    // 2. Préparer les IDs produits pour vérifier leur existence et prix
+    const { items, billingAddressId } = orderData;
+
+    // 1. Vérifier adresse (comme avant)
+    const address = await prisma.address.findUnique({ where: { id: billingAddressId } });
+    if (!address || address.userId !== userId) {
+      throw new ApiError(400, `Invalid billingAddressId`);
+    }
+
+    // 2. Vérifier produits et calculer total (comme avant)
     const productIds = items.map(item => item.productId);
     const products = await prisma.product.findMany({
-        where: { id: { in: productIds }, isAvailable: true }, // Vérifier aussi la disponibilité
+        where: { id: { in: productIds }, isAvailable: true },
         select: { id: true, price: true, name: true },
     });
-
-    // 3. Vérifier que tous les produits demandés existent et sont disponibles
     if (products.length !== productIds.length) {
-        const foundIds = products.map(p => p.id);
-        const missingIds = productIds.filter(id => !foundIds.includes(id));
-        throw new ApiError(400, `Invalid order: Product(s) not found or unavailable: ${missingIds.join(', ')}`);
+      throw new ApiError(400, `One or more products are unavailable.`);
     }
-
-    // 4. Calculer le montant total et préparer les OrderItems
-    let totalAmount = new Prisma.Decimal(0);
+    let totalAmountDecimal = new Prisma.Decimal(0);
     const orderItemsToCreate: Prisma.OrderItemCreateManyOrderInput[] = items.map(itemInput => {
-        const product = products.find(p => p.id === itemInput.productId);
-        if (!product) throw new Error('Product consistency error'); // Ne devrait pas arriver
-        
-        const itemTotal = product.price.mul(itemInput.quantity);
-        totalAmount = totalAmount.add(itemTotal);
-
-        return {
-            productId: product.id,
-            quantity: itemInput.quantity,
-            pricePerUnit: product.price, // Prix au moment de la commande
-            productName: product.name,   // Nom au moment de la commande
-        };
+      const product = products.find(p => p.id === itemInput.productId)!;
+      totalAmountDecimal = totalAmountDecimal.add(product.price.mul(itemInput.quantity));
+      return { productId: product.id, quantity: itemInput.quantity, pricePerUnit: product.price, productName: product.name };
     });
 
-    // 5. Exécuter la création dans une transaction
+    // Convertir le total en centimes pour Stripe (Stripe travaille avec la plus petite unité monétaire)
+    // Assumer EUR ou USD pour l'instant
+    const totalAmountCents = totalAmountDecimal.mul(100).toNumber();
+
+    // 3. Créer la commande en BDD avec statut PENDING_PAYMENT (dans une transaction potentielle si plus d'étapes)
+    let createdOrder;
     try {
-        const newOrder = await prisma.$transaction(async (tx) => {
-            const createdOrder = await tx.order.create({
-                data: {
-                    userId: userId,
-                    totalAmount: totalAmount,
-                    billingAddressId: billingAddressId,
-                    paymentMethodSummary: paymentMethodSummary ?? 'N/A', // Utiliser le résumé fourni ou N/A
-                    status: 'PROCESSING', // Statut initial
-                    items: {
-                        createMany: { // Créer plusieurs OrderItem d'un coup
-                            data: orderItemsToCreate,
-                        },
-                    },
+         createdOrder = await prisma.order.create({
+            data: {
+                userId: userId,
+                totalAmount: totalAmountDecimal,
+                billingAddressId: billingAddressId,
+                status: OrderStatus.PENDING_PAYMENT, // Statut initial
+                items: {
+                    createMany: { data: orderItemsToCreate },
                 },
-                include: { // Inclure les items dans la réponse
-                    items: true,
-                },
-            });
-            // --- Logique Post-Création éventuelle --- 
-            // - Envoyer email de confirmation
-            // - Décrémenter le stock si géré
-            // - Lancer un processus de paiement si nécessaire
-            
-            return createdOrder;
+            },
         });
-        return newOrder;
-    } catch (error) {
-        console.error("Order creation failed:", error);
-        // Gérer les erreurs potentielles de la transaction
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            // Erreurs spécifiques ?
-        }
-        throw new ApiError(500, 'Could not create order due to an internal error.');
+    } catch(dbError) {
+        console.error("Failed to create initial order in DB:", dbError);
+        throw new ApiError(500, "Could not initiate order.");
+    }
+    
+    // 4. Créer l'Intention de Paiement Stripe
+    try {
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: totalAmountCents,
+            currency: 'eur', // Ou 'usd', etc. - A rendre configurable
+            automatic_payment_methods: {
+                enabled: true, // Laisser Stripe gérer les méthodes de paiement
+            },
+            // Lier l'intention à notre commande via les métadonnées
+            metadata: {
+                orderId: createdOrder.id,
+                userId: userId,
+            },
+        });
+
+        // 5. Stocker l'ID de l'intention dans notre commande
+        await prisma.order.update({
+            where: { id: createdOrder.id },
+            data: { paymentIntentId: paymentIntent.id },
+        });
+
+        // 6. Retourner le secret client et l'ID de commande
+        return {
+            clientSecret: paymentIntent.client_secret,
+            orderId: createdOrder.id,
+        };
+
+    } catch (stripeError: any) {
+        console.error('Stripe Payment Intent creation failed:', stripeError);
+        // Si l'intention Stripe échoue, on pourrait vouloir annuler/supprimer la commande créée en BDD ?
+        // Ou la laisser en PENDING_PAYMENT pour une nouvelle tentative ? Pour l'instant, on la laisse.
+        // await prisma.order.delete({ where: { id: createdOrder.id } }); // Optionnel: Rollback manuel
+        throw new ApiError(500, `Failed to create payment intent: ${stripeError.message}`);
     }
   }
+
+  /**
+   * Met à jour le statut d'une commande. Utilisé par le webhook Stripe.
+   */
+  static async updateOrderStatus(orderId: string, paymentIntentId: string, status: OrderStatus): Promise<void> {
+       try {
+           // Vérifier que l'ID de l'intention de paiement correspond bien à la commande
+           await prisma.order.updateMany({ // updateMany pour utiliser paymentIntentId dans le where
+               where: {
+                   id: orderId,
+                   paymentIntentId: paymentIntentId,
+               },
+               data: {
+                   status: status,
+               },
+           });
+           console.log(`Order ${orderId} status updated to ${status} via webhook for PaymentIntent ${paymentIntentId}`);
+           // Déclencher d'autres actions si nécessaire (emails, activation service, etc.)
+       } catch (error) {
+           console.error(`Failed to update status for order ${orderId} from webhook:`, error);
+           // Gérer l'erreur (ex: re-essayer plus tard ?)
+       }
+   }
 
   /**
    * Récupère toutes les commandes d'un utilisateur spécifique.
