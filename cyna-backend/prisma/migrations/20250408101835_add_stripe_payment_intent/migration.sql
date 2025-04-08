@@ -9,8 +9,7 @@
 ALTER TYPE "OrderStatus" ADD VALUE 'PENDING_PAYMENT';
 
 -- AlterTable
-ALTER TABLE "Order" ADD COLUMN     "paymentIntentId" TEXT,
-ALTER COLUMN "status" SET DEFAULT 'PENDING_PAYMENT';
+ALTER TABLE "Order" ADD COLUMN     "paymentIntentId" TEXT;
 
 -- AlterTable
 ALTER TABLE "User" ADD COLUMN     "passwordResetExpires" TIMESTAMP(3),

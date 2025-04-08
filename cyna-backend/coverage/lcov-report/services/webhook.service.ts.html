@@ -1,0 +1,361 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for services/webhook.service.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">services</a> webhook.service.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">21.05% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>8/38</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">4.76% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>1/21</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/2</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">21.05% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>8/38</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import Stripe from 'stripe';
+import { OrderService } from './order.service';
+import { OrderStatus } from '@prisma/client';
+import config from '../config';
+&nbsp;
+// Initialiser Stripe (nécessaire pour construire l'événement)
+let stripe: Stripe | null = null;
+if (config.stripeSecretKey) {
+    stripe = new Stripe(config.stripeSecretKey, {
+        apiVersion: '2024-06-20' as any,
+        typescript: true,
+    });
+} else <span class="missing-if-branch" title="else path not taken" >E</span>{
+<span class="cstat-no" title="statement not covered" >    console.error('Stripe Secret Key is not configured. Webhook verification might fail.');</span>
+}
+&nbsp;
+export class WebhookService {
+&nbsp;
+    /**
+     * Construit l'événement Stripe à partir de la requête brute et de la signature.
+     * @param body - Le corps brut de la requête (Buffer ou string).
+     * @param signature - L'en-tête 'stripe-signature'.
+     * @returns L'événement Stripe vérifié.
+     * @throws ApiError si la vérification échoue.
+     */
+<span class="fstat-no" title="function not covered" >    static </span>constructWebhookEvent(body: Buffer | string, signature: string): Stripe.Event {
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!stripe || !config.stripeWebhookSecret) {</span>
+<span class="cstat-no" title="statement not covered" >            console.error('Stripe or Webhook Secret not configured.');</span>
+<span class="cstat-no" title="statement not covered" >            throw new Error('Webhook processing configuration error.'); </span>// Erreur serveur interne
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        try {</span>
+            const event = <span class="cstat-no" title="statement not covered" >stripe.webhooks.constructEvent(</span>
+                body,
+                signature,
+                config.stripeWebhookSecret
+            );
+<span class="cstat-no" title="statement not covered" >            return event;</span>
+        } catch (err: any) {
+<span class="cstat-no" title="statement not covered" >            console.error(`Webhook signature verification failed: ${err.message}`);</span>
+            // Lever une erreur spécifique ou générique pour le contrôleur
+<span class="cstat-no" title="statement not covered" >            throw new Error(`Webhook Error: ${err.message}`); </span>// Sera attrapé et renverra 400
+        }
+    }
+&nbsp;
+    /**
+     * Traite un événement webhook Stripe vérifié.
+     */
+<span class="fstat-no" title="function not covered" >    static </span>async handleWebhookEvent(event: Stripe.Event): Promise&lt;void&gt; {
+<span class="cstat-no" title="statement not covered" >        console.log(`Received Stripe webhook event: ${event.type}`);</span>
+&nbsp;
+        // Gérer l'événement payment_intent
+<span class="cstat-no" title="statement not covered" >        if (event.type.startsWith('payment_intent.')) {</span>
+            const paymentIntent = <span class="cstat-no" title="statement not covered" >event.data.object as Stripe.PaymentIntent;</span>
+            const orderId = <span class="cstat-no" title="statement not covered" >paymentIntent.metadata?.orderId;</span>
+            
+<span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (!orderId) {</span>
+<span class="cstat-no" title="statement not covered" >                console.error('Webhook Error: Missing orderId in PaymentIntent metadata', paymentIntent.id);</span>
+<span class="cstat-no" title="statement not covered" >                return; </span>// Ignorer si on ne peut pas lier à une commande
+            }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            switch (event.type) {</span>
+                case 'payment_intent.succeeded':
+<span class="cstat-no" title="statement not covered" >                    console.log(`PaymentIntent ${paymentIntent.id} succeeded for order ${orderId}.`);</span>
+                    // Paiement réussi : Mettre à jour la commande à ACTIVE (ou autre statut pertinent)
+<span class="cstat-no" title="statement not covered" >                    await OrderService.updateOrderStatus(orderId, paymentIntent.id, OrderStatus.ACTIVE);</span>
+                    // TODO: Envoyer email de confirmation de commande, activer services, etc.
+<span class="cstat-no" title="statement not covered" >                    break;</span>
+                case 'payment_intent.payment_failed':
+<span class="cstat-no" title="statement not covered" >                    console.log(`PaymentIntent ${paymentIntent.id} failed for order ${orderId}. Reason: ${paymentIntent.last_payment_error?.message}`);</span>
+                    // Paiement échoué : Mettre à jour la commande à FAILED
+<span class="cstat-no" title="statement not covered" >                    await OrderService.updateOrderStatus(orderId, paymentIntent.id, OrderStatus.FAILED);</span>
+                    // TODO: Envoyer email informant de l'échec ?
+<span class="cstat-no" title="statement not covered" >                    break;</span>
+                case 'payment_intent.processing':
+<span class="cstat-no" title="statement not covered" >                    console.log(`PaymentIntent ${paymentIntent.id} processing for order ${orderId}.`);</span>
+                     // Optionnel: Mettre à jour la commande à PROCESSING si ce statut est utilisé
+                    // await OrderService.updateOrderStatus(orderId, paymentIntent.id, OrderStatus.PROCESSING);
+<span class="cstat-no" title="statement not covered" >                    break;</span>
+                case 'payment_intent.canceled': // Peut arriver si annulé avant succès/échec
+<span class="cstat-no" title="statement not covered" >                    console.log(`PaymentIntent ${paymentIntent.id} canceled for order ${orderId}.`);</span>
+<span class="cstat-no" title="statement not covered" >                     await OrderService.updateOrderStatus(orderId, paymentIntent.id, OrderStatus.CANCELLED);</span>
+<span class="cstat-no" title="statement not covered" >                    break;</span>
+                // Ajouter d'autres événements si nécessaire (ex: charge.refunded)
+                default:
+<span class="cstat-no" title="statement not covered" >                    console.log(`Unhandled payment_intent event type: ${event.type}`);</span>
+            }
+        } else {
+<span class="cstat-no" title="statement not covered" >             console.log(`Unhandled event type: ${event.type}`);</span>
+        }
+        // Confirmer à Stripe que l'événement a été reçu (le contrôleur renverra 200)
+    }
+} </pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2025-04-08T11:54:38.345Z
+            </div>
+        <script src="../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
+    </body>
+</html>
+    

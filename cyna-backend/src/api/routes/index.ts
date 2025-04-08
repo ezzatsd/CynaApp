@@ -5,6 +5,7 @@ import productRouter from './product.routes'; // Importer les routes produits
 import categoryRouter from './category.routes'; // Importer les routes catégories
 import userRouter from './user.routes'; // Importer les routes utilisateur
 import orderRouter from './order.routes'; // Importer les routes commandes
+import contactRouter from './contact.routes'; // Importer les routes contact
 // ... etc ...
 
 const apiRouter = Router();
@@ -15,6 +16,7 @@ apiRouter.use('/products', productRouter); // Mount product routes under /api/pr
 apiRouter.use('/categories', categoryRouter); // Mount category routes under /api/categories
 apiRouter.use('/users', userRouter); // Mount user routes (pour /api/users/me, /api/users/me/addresses, etc.)
 apiRouter.use('/orders', orderRouter); // Monter les routes commandes
+apiRouter.use('/contact', contactRouter); // Monter les routes contact
 // ... etc ...
 
 // Simple health check route for /api

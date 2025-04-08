@@ -1,6 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
-import { AnyZodObject, ZodError } from 'zod';
+import { AnyZodObject, ZodError, z } from 'zod';
 import { ApiError } from '../../errors/ApiError';
+
+// Étendre Request pour inclure validatedData
+declare global {
+  namespace Express {
+    interface Request {
+      validatedData?: {
+        body?: any;
+        query?: any;
+        params?: any;
+      };
+    }
+  }
+}
 
 /**
  * Middleware pour valider les données de la requête (body, params, query) en utilisant un schéma Zod.
@@ -9,14 +22,20 @@ import { ApiError } from '../../errors/ApiError';
 export const validate = (schema: AnyZodObject) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await schema.parseAsync({
+      // Parser les données
+      const parsed = await schema.parseAsync({
         body: req.body,
         query: req.query,
         params: req.params,
       });
-      // Si la validation réussit, les données parsées ne sont pas explicitement attachées ici,
-      // les contrôleurs utiliseront req.body, req.params, req.query comme d'habitude.
-      // Zod assure la conformité du type et les transformations (par ex., .default()).
+      
+      // Attacher les données parsées à la requête
+      req.validatedData = {
+          body: parsed.body,
+          query: parsed.query,
+          params: parsed.params,
+      };
+
       return next();
     } catch (error) {
       if (error instanceof ZodError) {

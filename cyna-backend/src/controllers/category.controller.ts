@@ -9,12 +9,16 @@ export class CategoryController {
    */
   static async getAllCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // req.query contient les valeurs validées et avec défauts par Zod
-      const options = req.query as unknown as GetCategoriesOptions;
+      // Utiliser les données validées depuis le middleware
+      const options = req.validatedData?.query as unknown as GetCategoriesOptions;
+      if (!options) {
+          // Sécurité : Ne devrait pas arriver si le middleware a bien tourné
+           throw new ApiError(500, 'Validated query data not found after validation middleware.');
+      }
       const result = await CategoryService.getAllCategories(options);
       res.status(200).json(result);
     } catch (error) {
-      next(error); // Passe l'erreur au middleware de gestion d'erreurs
+      next(error);
     }
   }
 
@@ -24,7 +28,10 @@ export class CategoryController {
    */
   static async getCategoryById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const categoryId = req.params.id;
+      const categoryId = req.validatedData?.params?.id;
+       if (!categoryId) {
+          throw new ApiError(500, 'Validated category ID not found.');
+      }
       const category = await CategoryService.getCategoryById(categoryId);
 
       if (!category) {
@@ -33,7 +40,7 @@ export class CategoryController {
 
       res.status(200).json(category);
     } catch (error) {
-        next(error);
+      next(error);
     }
   }
 
@@ -45,9 +52,8 @@ export class CategoryController {
    */
   static async createCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // Les données ont été validées par le middleware Zod
-      const newCategory = await CategoryService.createCategory(req.body);
-      res.status(201).json(newCategory); // 201 Created
+      const newCategory = await CategoryService.createCategory(req.validatedData?.body);
+      res.status(201).json(newCategory);
     } catch (error) {
       next(error);
     }
@@ -59,9 +65,9 @@ export class CategoryController {
    */
   static async updateCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const categoryId = req.params.id;
-      // Les données ont été validées par le middleware Zod
-      const updatedCategory = await CategoryService.updateCategory(categoryId, req.body);
+      const categoryId = req.validatedData?.params?.id;
+       if (!categoryId) throw new ApiError(500, 'Validated category ID not found.');
+      const updatedCategory = await CategoryService.updateCategory(categoryId, req.validatedData?.body);
       res.status(200).json(updatedCategory);
     } catch (error) {
       next(error);
@@ -74,10 +80,10 @@ export class CategoryController {
    */
   static async deleteCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const categoryId = req.params.id;
-      // La validation de l'ID a été faite par le middleware Zod
+      const categoryId = req.validatedData?.params?.id;
+       if (!categoryId) throw new ApiError(500, 'Validated category ID not found.');
       await CategoryService.deleteCategory(categoryId);
-      res.status(204).send(); // 204 No Content
+      res.status(204).send();
     } catch (error) {
       next(error);
     }

@@ -1,6 +1,9 @@
 import dotenv from 'dotenv';
+import path from 'path';
 
-dotenv.config();
+// Charger simplement .env par défaut pour l'application
+// L'environnement de test (Jest) chargera .env.test via setupFiles
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 interface Config {
   port: number;
