@@ -3,6 +3,7 @@ import { Router } from 'express';
 import authRouter from './auth.routes'; // Corrected import path
 import productRouter from './product.routes'; // Importer les routes produits
 import categoryRouter from './category.routes'; // Importer les routes catégories
+import userRouter from './user.routes'; // Importer les routes utilisateur
 // ... etc ...
 
 const apiRouter = Router();
@@ -11,6 +12,7 @@ const apiRouter = Router();
 apiRouter.use('/auth', authRouter); // Mount auth routes under /api/auth
 apiRouter.use('/products', productRouter); // Mount product routes under /api/products
 apiRouter.use('/categories', categoryRouter); // Mount category routes under /api/categories
+apiRouter.use('/users', userRouter); // Mount user routes (pour /api/users/me, /api/users/me/addresses, etc.)
 // ... etc ...
 
 // Simple health check route for /api

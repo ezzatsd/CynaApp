@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { CategoryService } from '../services/category.service';
+import { CategoryService, GetCategoriesOptions } from '../services/category.service';
+import { ApiError } from '../errors/ApiError';
 
 export class CategoryController {
   /**
@@ -8,9 +9,10 @@ export class CategoryController {
    */
   static async getAllCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // TODO: Extraire les options de query (page, limit, sort, filter) de req.query
-      const categories = await CategoryService.getAllCategories();
-      res.status(200).json(categories);
+      // req.query contient les valeurs validées et avec défauts par Zod
+      const options = req.query as unknown as GetCategoriesOptions;
+      const result = await CategoryService.getAllCategories(options);
+      res.status(200).json(result);
     } catch (error) {
       next(error); // Passe l'erreur au middleware de gestion d'erreurs
     }
@@ -26,24 +28,58 @@ export class CategoryController {
       const category = await CategoryService.getCategoryById(categoryId);
 
       if (!category) {
-        const error = new Error(`Category with ID ${categoryId} not found`);
-        res.status(404).json({ message: error.message });
-        return;
+        return next(new ApiError(404, `Category with ID ${categoryId} not found`));
       }
 
       res.status(200).json(category);
     } catch (error) {
-        if (!res.headersSent) {
-            next(error);
-        }
+        next(error);
     }
   }
 
-  // --- Fonctions CRUD supplémentaires (à ajouter) ---
+  // --- Fonctions CRUD supplémentaires ---
 
-  // static async createCategory(req: Request, res: Response, next: NextFunction): Promise<void> { ... }
+  /**
+   * POST /api/categories
+   * Crée une nouvelle catégorie.
+   */
+  static async createCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      // Les données ont été validées par le middleware Zod
+      const newCategory = await CategoryService.createCategory(req.body);
+      res.status(201).json(newCategory); // 201 Created
+    } catch (error) {
+      next(error);
+    }
+  }
 
-  // static async updateCategory(req: Request, res: Response, next: NextFunction): Promise<void> { ... }
+  /**
+   * PUT /api/categories/:id
+   * Met à jour une catégorie existante.
+   */
+  static async updateCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const categoryId = req.params.id;
+      // Les données ont été validées par le middleware Zod
+      const updatedCategory = await CategoryService.updateCategory(categoryId, req.body);
+      res.status(200).json(updatedCategory);
+    } catch (error) {
+      next(error);
+    }
+  }
 
-  // static async deleteCategory(req: Request, res: Response, next: NextFunction): Promise<void> { ... }
+  /**
+   * DELETE /api/categories/:id
+   * Supprime une catégorie.
+   */
+  static async deleteCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const categoryId = req.params.id;
+      // La validation de l'ID a été faite par le middleware Zod
+      await CategoryService.deleteCategory(categoryId);
+      res.status(204).send(); // 204 No Content
+    } catch (error) {
+      next(error);
+    }
+  }
 } 

@@ -1,22 +1,60 @@
 import { Router } from 'express';
 import { ProductController } from '../../controllers/product.controller';
+import { isAuthenticated, isAdmin } from '../middleware/auth.middleware';
+import { validate } from '../middleware/validate.middleware';
+import { 
+    createProductSchema, 
+    updateProductSchema, 
+    productIdParamSchema,
+    getProductsQuerySchema
+} from '../../validations/product.validation';
 
 const productRouter = Router();
 
-// GET /api/products - Récupérer tous les produits
-productRouter.get('/', ProductController.getAllProducts);
+// --- Routes Publiques --- 
 
-// GET /api/products/:id - Récupérer un produit par ID
-productRouter.get('/:id', ProductController.getProductById);
+// GET /api/products - Récupérer tous les produits (Publique)
+// Validation des query params
+productRouter.get(
+    '/', 
+    validate(getProductsQuerySchema),
+    ProductController.getAllProducts
+);
 
-// --- Routes CRUD supplémentaires (à ajouter) ---
-// POST /api/products - Créer un nouveau produit (nécessite auth + admin)
-// productRouter.post('/', /* isAuthenticated, isAdmin, */ ProductController.createProduct);
+// GET /api/products/:id - Récupérer un produit par ID (Publique)
+productRouter.get(
+    '/:id', 
+    validate(productIdParamSchema), 
+    ProductController.getProductById
+);
 
-// PUT /api/products/:id - Mettre à jour un produit (nécessite auth + admin)
-// productRouter.put('/:id', /* isAuthenticated, isAdmin, */ ProductController.updateProduct);
+// --- Routes Administrateur --- 
 
-// DELETE /api/products/:id - Supprimer un produit (nécessite auth + admin)
-// productRouter.delete('/:id', /* isAuthenticated, isAdmin, */ ProductController.deleteProduct);
+// POST /api/products - Créer un nouveau produit (Admin seulement)
+productRouter.post(
+    '/', 
+    validate(createProductSchema), 
+    isAuthenticated, 
+    isAdmin, 
+    ProductController.createProduct
+);
+
+// PUT /api/products/:id - Mettre à jour un produit (Admin seulement)
+productRouter.put(
+    '/:id', 
+    validate(updateProductSchema), 
+    isAuthenticated, 
+    isAdmin, 
+    ProductController.updateProduct
+);
+
+// DELETE /api/products/:id - Supprimer un produit (Admin seulement)
+productRouter.delete(
+    '/:id', 
+    validate(productIdParamSchema), // Valide seulement l'ID
+    isAuthenticated, 
+    isAdmin, 
+    ProductController.deleteProduct
+);
 
 export default productRouter; 

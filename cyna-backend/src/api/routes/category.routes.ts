@@ -1,22 +1,64 @@
 import { Router } from 'express';
 import { CategoryController } from '../../controllers/category.controller';
+import { isAuthenticated, isAdmin } from '../middleware/auth.middleware';
+import { validate } from '../middleware/validate.middleware';
+import { 
+    createCategorySchema, 
+    updateCategorySchema, 
+    categoryIdParamSchema, 
+    getCategoriesQuerySchema
+} from '../../validations/category.validation';
 
 const categoryRouter = Router();
 
-// GET /api/categories - Récupérer toutes les catégories
-categoryRouter.get('/', CategoryController.getAllCategories);
+// --- Routes Publiques --- 
 
-// GET /api/categories/:id - Récupérer une catégorie par ID
-categoryRouter.get('/:id', CategoryController.getCategoryById);
+// GET /api/categories - Récupérer toutes les catégories (Publique)
+// Validation des query params
+categoryRouter.get(
+    '/', 
+    validate(getCategoriesQuerySchema), // Valider page, limit, sortBy, etc.
+    CategoryController.getAllCategories
+);
 
-// --- Routes CRUD supplémentaires (à ajouter) ---
-// POST /api/categories - Créer une nouvelle catégorie (nécessite auth + admin)
-// categoryRouter.post('/', /* isAuthenticated, isAdmin, */ CategoryController.createCategory);
+// GET /api/categories/:id - Récupérer une catégorie par ID (Publique)
+// Validation de l'ID dans l'URL
+categoryRouter.get(
+    '/:id', 
+    validate(categoryIdParamSchema), 
+    CategoryController.getCategoryById
+);
 
-// PUT /api/categories/:id - Mettre à jour une catégorie (nécessite auth + admin)
-// categoryRouter.put('/:id', /* isAuthenticated, isAdmin, */ CategoryController.updateCategory);
+// --- Routes Administrateur --- 
 
-// DELETE /api/categories/:id - Supprimer une catégorie (nécessite auth + admin)
-// categoryRouter.delete('/:id', /* isAuthenticated, isAdmin, */ CategoryController.deleteCategory);
+// POST /api/categories - Créer une nouvelle catégorie (Admin seulement)
+// Valide le body, puis vérifie l'authentification et le rôle admin
+categoryRouter.post(
+    '/', 
+    validate(createCategorySchema), 
+    isAuthenticated, 
+    isAdmin, 
+    CategoryController.createCategory
+);
+
+// PUT /api/categories/:id - Mettre à jour une catégorie (Admin seulement)
+// Valide l'ID et le body, puis vérifie l'authentification et le rôle admin
+categoryRouter.put(
+    '/:id', 
+    validate(updateCategorySchema), 
+    isAuthenticated, 
+    isAdmin, 
+    CategoryController.updateCategory
+);
+
+// DELETE /api/categories/:id - Supprimer une catégorie (Admin seulement)
+// Valide l'ID, puis vérifie l'authentification et le rôle admin
+categoryRouter.delete(
+    '/:id', 
+    validate(categoryIdParamSchema), // Valide seulement l'ID ici
+    isAuthenticated, 
+    isAdmin, 
+    CategoryController.deleteCategory
+);
 
 export default categoryRouter; 

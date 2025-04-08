@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { ProductService } from '../services/product.service';
+import { ProductService, GetProductsOptions } from '../services/product.service';
+import { ApiError } from '../errors/ApiError';
 // import { NotFoundError } from '../errors/NotFoundError'; // Remplacé par une erreur générique pour l'instant
 
 export class ProductController {
@@ -9,9 +10,10 @@ export class ProductController {
    */
   static async getAllProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // TODO: Extraire les options de query (page, limit, sort, filter) de req.query
-      const products = await ProductService.getAllProducts();
-      res.status(200).json(products);
+      // req.query contient les valeurs validées et avec défauts par Zod
+      const options = req.query as unknown as GetProductsOptions;
+      const result = await ProductService.getAllProducts(options);
+      res.status(200).json(result);
     } catch (error) {
       next(error); // Passe l'erreur au middleware de gestion d'erreurs
     }
@@ -33,8 +35,7 @@ export class ProductController {
         // (error as any).statusCode = 404;
         // Ou utiliser une classe d'erreur personnalisée plus tard
         // throw new NotFoundError(`Product with ID ${productId} not found`);
-        res.status(404).json({ message: error.message });
-        return; // Important pour ne pas appeler next() après avoir envoyé une réponse
+        return next(new ApiError(404, `Product with ID ${productId} not found`));
       }
 
       res.status(200).json(product);
@@ -46,11 +47,49 @@ export class ProductController {
     }
   }
 
-  // --- Fonctions CRUD supplémentaires (à ajouter) ---
+  // --- Fonctions CRUD supplémentaires ---
 
-  // static async createProduct(req: Request, res: Response, next: NextFunction): Promise<void> { ... }
+  /**
+   * POST /api/products
+   * Crée un nouveau produit.
+   */
+  static async createProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      // Données validées par Zod
+      const newProduct = await ProductService.createProduct(req.body);
+      res.status(201).json(newProduct);
+    } catch (error) {
+      next(error);
+    }
+  }
 
-  // static async updateProduct(req: Request, res: Response, next: NextFunction): Promise<void> { ... }
+  /**
+   * PUT /api/products/:id
+   * Met à jour un produit existant.
+   */
+  static async updateProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const productId = req.params.id;
+      // Données validées par Zod
+      const updatedProduct = await ProductService.updateProduct(productId, req.body);
+      res.status(200).json(updatedProduct);
+    } catch (error) {
+      next(error);
+    }
+  }
 
-  // static async deleteProduct(req: Request, res: Response, next: NextFunction): Promise<void> { ... }
+  /**
+   * DELETE /api/products/:id
+   * Supprime un produit.
+   */
+  static async deleteProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const productId = req.params.id;
+      // ID validé par Zod
+      await ProductService.deleteProduct(productId);
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  }
 } 

@@ -1,5 +1,5 @@
 import { PrismaClient, Prisma } from '@prisma/client';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import config from '../config';
 
