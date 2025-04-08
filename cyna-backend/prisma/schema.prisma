@@ -24,6 +24,10 @@ model User {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
+  // Champs pour la réinitialisation de mot de passe
+  passwordResetToken       String?   @unique // Stocker le HASH du token ici est plus sûr
+  passwordResetExpires     DateTime?
+
   orders         Order[]
   addresses      Address[]
   paymentMethods PaymentMethod[]

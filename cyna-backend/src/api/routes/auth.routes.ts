@@ -1,19 +1,55 @@
 import { Router } from 'express';
-import * as AuthController from '../../controllers/auth.controller';
-// Import validation middleware later
-// import { validate } from '../middleware/validate.middleware'; 
-// import { registerSchema, loginSchema } from '../../types/validationSchemas'; // Define validation schemas later
+import { AuthController } from '../../controllers/auth.controller';
+import { validate } from '../middleware/validate.middleware';
+import { 
+    registerSchema,
+    loginSchema,
+    refreshTokenSchema, 
+    forgotPasswordSchema, 
+    resetPasswordSchema 
+} from '../../validations/auth.validation';
 
 const authRouter = Router();
 
 // POST /api/auth/register
-// Add validation middleware before controller: validate(registerSchema)
-authRouter.post('/register', AuthController.registerUser);
+authRouter.post(
+    '/register', 
+    validate(registerSchema), 
+    AuthController.registerUser
+);
 
 // POST /api/auth/login
-// Add validation middleware: validate(loginSchema)
-authRouter.post('/login', AuthController.loginUser);
+authRouter.post(
+    '/login', 
+    validate(loginSchema), 
+    AuthController.loginUser
+);
 
-// Add routes for /logout, /refresh-token, /forgot-password, /reset-password later
+// POST /api/auth/logout
+authRouter.post(
+    '/logout', 
+    AuthController.logoutUser
+);
+
+// POST /api/auth/refresh-token
+authRouter.post(
+    '/refresh-token', 
+    validate(refreshTokenSchema), 
+    AuthController.refreshAuthToken
+);
+
+// POST /api/auth/forgot-password
+authRouter.post(
+    '/forgot-password', 
+    validate(forgotPasswordSchema), 
+    AuthController.requestPasswordReset
+);
+
+// POST /api/auth/reset-password/:token 
+authRouter.post(
+    '/reset-password/:token', 
+    validate(resetPasswordSchema), 
+    AuthController.performPasswordReset
+);
 
 export default authRouter; 
