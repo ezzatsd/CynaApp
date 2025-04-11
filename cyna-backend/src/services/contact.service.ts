@@ -1,5 +1,6 @@
 import { PrismaClient, Prisma } from '@prisma/client';
 import { ApiError } from '../errors/ApiError';
+import logger from '../config/logger';
 
 const prisma = new PrismaClient();
 
@@ -24,11 +25,12 @@ export class ContactService {
           // isRead est false par défaut
         },
       });
-      console.log(`Contact message received from ${data.email}`);
+      logger.info(`Contact message received from ${data.email}`);
       // Optionnel : Envoyer une notification à l'admin ici
 
-    } catch (error) {
-      console.error("Failed to save contact message:", error);
+    } catch (error: unknown) {
+      const err = error as Error;
+      logger.error("Failed to save contact message:", { email: data.email, error: err.message });
       // Ne pas nécessairement renvoyer une erreur 500 à l'utilisateur pour cela,
       // mais une erreur interne peut être appropriée si le stockage est critique.
       throw new ApiError(500, 'Could not process your message at this time.');

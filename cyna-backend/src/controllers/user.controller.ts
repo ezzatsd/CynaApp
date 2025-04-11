@@ -28,11 +28,11 @@ export class UserController {
    */
   static async updateCurrentUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      if (!req.user) {
-        throw new ApiError(401, 'Authentication required');
-      }
-      // Les données du body ont été validées par Zod
-      const updatedUser = await UserService.updateUserProfile(req.user.id, req.body);
+      if (!req.user) throw new ApiError(401, 'Authentication required');
+      // Utiliser les données validées
+      const updateData = req.validatedData?.body;
+      if (!updateData) throw new ApiError(500, 'Validated user data not found.');
+      const updatedUser = await UserService.updateUserProfile(req.user.id, updateData);
       res.status(200).json(updatedUser);
     } catch (error) {
       next(error);
@@ -45,12 +45,12 @@ export class UserController {
    */
   static async changePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      if (!req.user) {
-        throw new ApiError(401, 'Authentication required');
-      }
-      const { currentPassword, newPassword } = req.body; // Données validées par Zod
+      if (!req.user) throw new ApiError(401, 'Authentication required');
+       // Utiliser les données validées
+      const { currentPassword, newPassword } = req.validatedData?.body;
+      if (!currentPassword || !newPassword) throw new ApiError(500, 'Validated password data not found.');
       await UserService.changeUserPassword(req.user.id, currentPassword, newPassword);
-      res.status(204).send(); // Pas de contenu à renvoyer
+      res.status(204).send(); 
     } catch (error) {
       next(error);
     }
@@ -80,11 +80,11 @@ export class UserController {
    */
   static async addUserAddress(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      if (!req.user) {
-        throw new ApiError(401, 'Authentication required');
-      }
-      // Données validées par Zod
-      const newAddress = await UserService.addUserAddress(req.user.id, req.body);
+      if (!req.user) throw new ApiError(401, 'Authentication required');
+       // Utiliser les données validées
+      const addressData = req.validatedData?.body;
+      if (!addressData) throw new ApiError(500, 'Validated address data not found.');
+      const newAddress = await UserService.addUserAddress(req.user.id, addressData);
       res.status(201).json(newAddress);
     } catch (error) {
       next(error);
@@ -97,10 +97,10 @@ export class UserController {
    */
   static async getUserAddressById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      if (!req.user) {
-        throw new ApiError(401, 'Authentication required');
-      }
-      const addressId = req.params.addressId; // ID validé par Zod
+      if (!req.user) throw new ApiError(401, 'Authentication required');
+      // Utiliser les données validées
+      const addressId = req.validatedData?.params?.addressId;
+      if (!addressId) throw new ApiError(500, 'Validated address ID not found.');
       const address = await UserService.getUserAddressById(req.user.id, addressId);
       res.status(200).json(address);
     } catch (error) {
@@ -114,12 +114,12 @@ export class UserController {
    */
   static async updateUserAddress(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      if (!req.user) {
-        throw new ApiError(401, 'Authentication required');
-      }
-      const addressId = req.params.addressId; // ID validé par Zod
-      // Données du body validées par Zod
-      const updatedAddress = await UserService.updateUserAddress(req.user.id, addressId, req.body);
+      if (!req.user) throw new ApiError(401, 'Authentication required');
+       // Utiliser les données validées
+      const addressId = req.validatedData?.params?.addressId;
+      const addressData = req.validatedData?.body;
+      if (!addressId || !addressData) throw new ApiError(500, 'Validated address ID or data not found.');
+      const updatedAddress = await UserService.updateUserAddress(req.user.id, addressId, addressData);
       res.status(200).json(updatedAddress);
     } catch (error) {
       next(error);
@@ -132,10 +132,10 @@ export class UserController {
    */
   static async deleteUserAddress(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      if (!req.user) {
-        throw new ApiError(401, 'Authentication required');
-      }
-      const addressId = req.params.addressId; // ID validé par Zod
+      if (!req.user) throw new ApiError(401, 'Authentication required');
+      // Utiliser les données validées
+      const addressId = req.validatedData?.params?.addressId;
+      if (!addressId) throw new ApiError(500, 'Validated address ID not found.');
       await UserService.deleteUserAddress(req.user.id, addressId);
       res.status(204).send();
     } catch (error) {

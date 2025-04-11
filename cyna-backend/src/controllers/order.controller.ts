@@ -14,9 +14,12 @@ export class OrderController {
       if (!req.user) {
         throw new ApiError(401, 'Authentication required');
       }
-      const orderData = req.body; // Données validées par Zod
+      const orderData = req.validatedData?.body;
+      if (!orderData) {
+        throw new ApiError(500, 'Validated order data not found.');
+      }
       
-      // Appeler la nouvelle méthode du service
+      // Appeler la méthode sans injecter d'instance Stripe
       const { clientSecret, orderId } = await OrderService.createOrderAndPaymentIntent(req.user.id, orderData);
       
       if (!clientSecret) {
@@ -57,11 +60,14 @@ export class OrderController {
    */
   static async getUserOrderById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      if (!req.user) {
-        throw new ApiError(401, 'Authentication required');
-      }
-      const orderId = req.params.orderId; // ID validé par Zod
-      const order = await OrderService.getUserOrderById(req.user.id, orderId);
+      const requestingUserId = req.user?.id;
+      if (!requestingUserId) throw new ApiError(401, 'Authentication required');
+      
+      const orderId = req.validatedData?.params?.orderId;
+      if (!orderId) throw new ApiError(500, 'Validated order ID not found.');
+      
+      const order = await OrderService.getUserOrderById(requestingUserId, orderId);
+      
       res.status(200).json(order);
     } catch (error) {
       next(error);

@@ -10,17 +10,13 @@ export class ContactController {
    */
   static async submitContactForm(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // Les données ont été validées par Zod
-      const messageData = req.body;
-      
+      // Utiliser les données validées
+      const messageData = req.validatedData?.body;
+      if (!messageData) throw new ApiError(500, 'Validated contact data not found.');
       await ContactService.saveContactMessage(messageData);
-
-      // Renvoyer une réponse succès générique
       res.status(200).json({ message: 'Your message has been received. Thank you!' });
-
     } catch (error) {
-        // Si le service lève une erreur (ex: BDD indisponible)
-        next(error); 
+      next(error); 
     }
   }
 } 

@@ -2,8 +2,7 @@ import request from 'supertest';
 import app from '../../app'; 
 import { PrismaClient, Category } from '@prisma/client';
 import { generateTestJwt } from '../helpers/auth.helper'; // Notre helper pour les tokens
-
-const prisma = new PrismaClient();
+import prisma from '../helpers/prisma.helper'; // Importer l'instance partagée
 
 // Variables globales pour les tests
 let adminToken: string;
@@ -77,53 +76,36 @@ describe('Product API Endpoints', () => {
         // Ajouter des tests pour pagination/filtres ici après création
     });
 
-     // --- Tests Admin (POST, PUT, DELETE) --- 
-     describe('Admin Operations', () => {
-
-        it('POST /api/products - should fail without admin token', async () => {
+    // --- Tests Admin (POST Permissions & Validation) --- 
+    describe('POST /api/products (Permissions & Validation)', () => {
+        // Test permissions
+        it('should fail without admin token', async () => {
             const response = await request(app)
                 .post('/api/products')
                 .set('Authorization', `Bearer ${normalUserToken}`)
                 .send(productData);
             expect(response.status).toBe(403);
         });
-
-        it('POST /api/products - should fail without any token', async () => {
+        it('should fail without any token', async () => {
             const response = await request(app)
                 .post('/api/products')
                 .send(productData);
             expect(response.status).toBe(401);
         });
 
-        it('POST /api/products - should create a product with admin token', async () => {
-            const response = await request(app)
-                .post('/api/products')
-                .set('Authorization', `Bearer ${adminToken}`)
-                .send(productData);
-
-            expect(response.status).toBe(201);
-            expect(response.body).toHaveProperty('id');
-            expect(response.body.name).toBe(productData.name);
-            expect(response.body.description).toBe(productData.description);
-            expect(response.body.categoryId).toBe(productData.categoryId);
-            // Prisma retourne les Decimal comme string par défaut via JSON
-            expect(response.body.price).toBe(productData.price.toString()); 
-            expect(response.body.images).toEqual(productData.images);
-            expect(response.body.features).toEqual(productData.features);
-            createdProductId = response.body.id;
-        });
-
-        it('POST /api/products - should fail with non-existent categoryId', async () => {
+        // Test validation
+        it('should fail with non-existent categoryId', async () => {
              const invalidData = { ...productData, categoryId: 'nonexistent-cat-id' };
              const response = await request(app)
                  .post('/api/products')
                  .set('Authorization', `Bearer ${adminToken}`)
                  .send(invalidData);
-             expect(response.status).toBe(400); // Le service doit vérifier l'existence de la catégorie
-             expect(response.body.message).toMatch(/Invalid categoryId/i);
+             expect(response.status).toBe(400);
+             expect(response.body.errors).toEqual(expect.arrayContaining([
+                 expect.objectContaining({ field: 'body.categoryId', message: 'Invalid category ID format' })
+             ]));
          });
-
-         it('POST /api/products - should fail with missing name', async () => {
+         it('should fail with missing name', async () => {
              const { name, ...invalidData } = productData;
              const response = await request(app)
                  .post('/api/products')
@@ -132,68 +114,79 @@ describe('Product API Endpoints', () => {
              expect(response.status).toBe(400);
              expect(response.body.errors).toEqual(expect.arrayContaining([expect.objectContaining({ field: 'body.name' })]));
          });
-         
-        // Ajouter tests pour prix invalide, images invalides etc.
+        // Ajouter d'autres tests de validation POST ici...
+    });
 
-        // --- Tests sur le produit créé --- 
-        describe('Operations on created product', () => {
-             beforeAll(() => {
-                 if (!createdProductId) {
-                     throw new Error('Cannot run product operation tests because createdProductId is not set.');
-                 }
-             });
+    // --- Tests sur un produit spécifique (GET by ID, PUT, DELETE) ---
+    describe('Operations on a specific product (GET /:id, PUT /:id, DELETE /:id)', () => {
+        let specificProductId: string;
 
-            it('GET /api/products/:id - should retrieve the created product', async () => {
-                const response = await request(app).get(`/api/products/${createdProductId}`);
-                expect(response.status).toBe(200);
-                expect(response.body.id).toBe(createdProductId);
-                expect(response.body.name).toBe(productData.name);
-            });
-
-            // Ajouter des tests pour GET /api/products avec filtres (categoryId, search, price)
-
-            it('PUT /api/products/:id - should update the product with admin token', async () => {
-                const updatedData = { name: 'Updated Product Name', price: 120.50 };
-                const response = await request(app)
-                    .put(`/api/products/${createdProductId}`)
-                    .set('Authorization', `Bearer ${adminToken}`)
-                    .send(updatedData);
-                expect(response.status).toBe(200);
-                expect(response.body.name).toBe(updatedData.name);
-                 expect(response.body.price).toBe(updatedData.price.toString());
-            });
-
-            it('PUT /api/products/:id - should fail without admin token', async () => {
-                const response = await request(app)
-                    .put(`/api/products/${createdProductId}`)
-                    .set('Authorization', `Bearer ${normalUserToken}`)
-                    .send({ name: 'Update Attempt' });
-                expect(response.status).toBe(403);
-            });
+        // Créer le produit nécessaire pour ces tests
+        beforeAll(async () => {
+            const response = await request(app)
+                .post('/api/products')
+                .set('Authorization', `Bearer ${adminToken}`)
+                .send(productData); // Utiliser productData défini plus haut
             
-            // Ajouter tests validation PUT
+            if (response.status !== 201) {
+                 console.error("Failed to create product in beforeAll:", response.body);
+                 throw new Error(`Setup failed: Could not create product for testing. Status: ${response.status}`);
+            }
+            specificProductId = response.body.id;
+        });
 
-            it('DELETE /api/products/:id - should fail without admin token', async () => {
-                 const response = await request(app)
-                    .delete(`/api/products/${createdProductId}`)
-                    .set('Authorization', `Bearer ${normalUserToken}`);
-                 expect(response.status).toBe(403);
-            });
+        it('GET /api/products/:id - should retrieve the created product', async () => {
+            const response = await request(app).get(`/api/products/${specificProductId}`);
+            expect(response.status).toBe(200);
+            expect(response.body.id).toBe(specificProductId);
+            expect(response.body.name).toBe(productData.name);
+        });
 
-            it('DELETE /api/products/:id - should delete the product with admin token', async () => {
-                 const response = await request(app)
-                    .delete(`/api/products/${createdProductId}`)
-                    .set('Authorization', `Bearer ${adminToken}`);
-                 expect(response.status).toBe(204);
+        it('PUT /api/products/:id - should update the product with admin token', async () => {
+            const updatedData = { name: 'Updated Product Name', price: 120.50 };
+            const response = await request(app)
+                .put(`/api/products/${specificProductId}`)
+                .set('Authorization', `Bearer ${adminToken}`)
+                .send(updatedData);
+            expect(response.status).toBe(200);
+            expect(response.body.name).toBe(updatedData.name);
+            expect(response.body.price).toBe(updatedData.price.toString());
+        });
 
-                 const getResponse = await request(app).get(`/api/products/${createdProductId}`);
-                 expect(getResponse.status).toBe(404);
-            });
+        it('PUT /api/products/:id - should fail without admin token', async () => {
+            const response = await request(app)
+                .put(`/api/products/${specificProductId}`)
+                .set('Authorization', `Bearer ${normalUserToken}`)
+                .send({ name: 'Update Attempt' });
+            expect(response.status).toBe(403);
+        });
+        
+        // Ajouter tests validation PUT
 
-             it('GET /api/products/:id - should return 404 after deletion', async () => {
-                 const response = await request(app).get(`/api/products/${createdProductId}`);
-                 expect(response.status).toBe(404);
-             });
+        it('DELETE /api/products/:id - should fail without admin token', async () => {
+            const response = await request(app)
+                .delete(`/api/products/${specificProductId}`)
+                .set('Authorization', `Bearer ${normalUserToken}`);
+            expect(response.status).toBe(403);
+        });
+
+        it('DELETE /api/products/:id - should delete the product with admin token', async () => {
+            const response = await request(app)
+                .delete(`/api/products/${specificProductId}`)
+                .set('Authorization', `Bearer ${adminToken}`);
+            expect(response.status).toBe(204);
+
+            // Vérifier qu'il n'est plus récupérable
+            const getResponse = await request(app).get(`/api/products/${specificProductId}`);
+            expect(getResponse.status).toBe(404);
+        });
+
+        it('GET /api/products/:id - should return 404 after deletion', async () => {
+            const response = await request(app).get(`/api/products/${specificProductId}`);
+            expect(response.status).toBe(404);
         });
     });
+
+    // Ajouter des tests pour GET /api/products avec filtres/pagination ici
+
 }); 

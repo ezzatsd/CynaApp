@@ -1,7 +1,9 @@
 import app from './app';
 import { PrismaClient } from '@prisma/client'; // Import PrismaClient
+import config from './config';
+import logger from './config/logger'; // Importer le logger
 
-const PORT = process.env.PORT || 5001;
+const PORT = config.port;
 const prisma = new PrismaClient(); // Instantiate Prisma Client
 
 async function main() {
@@ -11,7 +13,7 @@ async function main() {
     console.log('Database connected successfully');
 
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      logger.info(`Server is running on port ${PORT}`);
     });
 
   } catch (error) {

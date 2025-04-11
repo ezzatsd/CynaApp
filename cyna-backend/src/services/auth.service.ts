@@ -5,6 +5,7 @@ import config from '../config';
 import { ApiError } from '../errors/ApiError';
 import crypto from 'crypto';
 import { EmailService } from './email.service';
+import logger from '../config/logger';
 
 const prisma = new PrismaClient();
 const SALT_ROUNDS = 10; // Standard salt rounds for bcrypt
@@ -95,9 +96,9 @@ const storeRefreshToken = async (userId: string, token: string): Promise<void> =
                 expiresAt: expiresAt,
             },
         });
-    } catch (error) {
-        console.error('Failed to store refresh token:', error);
-        // Ne pas bloquer le login si le stockage échoue, mais logger l'erreur
+    } catch (error: unknown) {
+        const err = error as Error;
+        logger.error('Failed to store refresh token:', { userId, error: err.message });
     }
 };
 
@@ -139,8 +140,9 @@ const deleteRefreshToken = async (token: string): Promise<void> => {
         await prisma.session.deleteMany({ // deleteMany au cas où (même si token devrait être unique)
             where: { token: token },
         });
-    } catch (error) {
-        console.error('Failed to delete refresh token:', error);
+    } catch (error: unknown) {
+        const err = error as Error;
+        logger.error('Failed to delete refresh token:', { error: err.message });
     }
 };
 
@@ -213,9 +215,7 @@ export const login = async (credentials: LoginInput): Promise<{ user: Omit<User,
  export const forgotPassword = async (email: string): Promise<void> => {
      const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
      if (!user) {
-         // Ne pas révéler si l'email existe ou non pour des raisons de sécurité
-         // Simuler un succès même si l'utilisateur n'est pas trouvé
-         console.log(`Password reset requested for non-existent email: ${email}`);
+         logger.warn(`Password reset requested for non-existent email: ${email}`);
          return; 
      }
 
@@ -243,9 +243,9 @@ export const login = async (credentials: LoginInput): Promise<{ user: Omit<User,
          // Envoyer l'email avec le token NON hashé
          await EmailService.sendPasswordResetEmail(user.email, resetToken);
 
-     } catch (error) {
-         console.error("Forgot password process failed for user:", user.id, error);
-         // Ne pas lever d'erreur à l'utilisateur final ici non plus
+     } catch (error: unknown) {
+         const err = error as Error;
+         logger.error("Forgot password process failed for user:", { userId: user?.id, error: err.message });
      }
  };
 

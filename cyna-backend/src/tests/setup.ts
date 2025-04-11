@@ -1,12 +1,15 @@
-import { PrismaClient } from '@prisma/client';
+// src/tests/setup.ts
+// import { PrismaClient } from '@prisma/client'; // Ne plus créer d'instance ici
+import prismaTestClient from './helpers/prisma.helper'; // Importer l'instance unique
 
-const prisma = new PrismaClient(); // Utilise DATABASE_URL de .env.test car NODE_ENV=test
+// const prisma = new PrismaClient(); // Supprimé
 
 /**
  * Nettoie toutes les données de la base de données de test.
  * Attention : Ceci supprime TOUT ! A n'utiliser que sur une BDD de test.
  */
 async function cleanTestDatabase() {
+    const prisma = prismaTestClient; // Utiliser l'instance importée
     // Ordre important à cause des contraintes de clés étrangères
     // Supprimer les modèles qui dépendent d'autres en premier
     await prisma.orderItem.deleteMany();
@@ -42,5 +45,6 @@ beforeAll(async () => {
 
 // Fermer la connexion Prisma après tous les tests dans le fichier
 afterAll(async () => {
-    await prisma.$disconnect();
+    // Utiliser l'instance unique pour déconnecter
+    await prismaTestClient.$disconnect(); 
 }); 

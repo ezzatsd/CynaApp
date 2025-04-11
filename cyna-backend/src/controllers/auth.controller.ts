@@ -18,8 +18,10 @@ export class AuthController {
    */
   static async registerUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // TODO: Utiliser le schéma de validation Zod ici
-      const newUser = await registerService(req.body);
+      // Utiliser les données validées
+      const userData = req.validatedData?.body;
+      if (!userData) throw new ApiError(500, 'Validated registration data not found.');
+      const newUser = await registerService(userData);
       res.status(201).json(newUser);
     } catch (error: any) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -40,8 +42,10 @@ export class AuthController {
    */
   static async loginUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // TODO: Utiliser le schéma de validation Zod ici
-      const result = await loginService(req.body);
+      // Utiliser les données validées
+      const credentials = req.validatedData?.body;
+      if (!credentials) throw new ApiError(500, 'Validated login data not found.');
+      const result = await loginService(credentials);
       if (!result) {
         throw new ApiError(401, 'Invalid email or password');
       }
@@ -72,11 +76,9 @@ export class AuthController {
    */
   static async refreshAuthToken(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // TODO: Utiliser le schéma de validation Zod ici
-      const { refreshToken } = req.body;
-      if (!refreshToken) { // Vérification basique en attendant Zod
-         throw new ApiError(400, 'Refresh token is required');
-      }
+      // Utiliser les données validées
+      const { refreshToken } = req.validatedData?.body;
+      if (!refreshToken) throw new ApiError(500, 'Validated refresh token not found.');
       const result = await refreshAccessTokenService(refreshToken);
       res.status(200).json(result);
     } catch (error) {
@@ -89,11 +91,9 @@ export class AuthController {
    */
   static async requestPasswordReset(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // TODO: Utiliser le schéma de validation Zod ici
-      const { email } = req.body;
-      if (!email) { // Vérification basique en attendant Zod
-         throw new ApiError(400, 'Email is required');
-      }
+      // Utiliser les données validées
+      const { email } = req.validatedData?.body;
+      if (!email) throw new ApiError(500, 'Validated email not found.');
       await forgotPasswordService(email);
       res.status(200).json({ message: 'If an account with this email exists, a password reset link has been sent.' });
     } catch (error) {
@@ -107,12 +107,10 @@ export class AuthController {
    */
   static async performPasswordReset(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-       // TODO: Utiliser le schéma de validation Zod ici
-      const { token } = req.params;
-      const { password } = req.body;
-       if (!token || !password) { // Vérification basique
-          throw new ApiError(400, 'Token and new password are required');
-       }
+      // Utiliser les données validées
+      const token = req.validatedData?.params?.token;
+      const password = req.validatedData?.body?.password;
+      if (!token || !password) throw new ApiError(500, 'Validated token or password not found.');
       await resetPasswordService(token, password);
       res.status(200).json({ message: 'Password has been reset successfully.' });
     } catch (error) {

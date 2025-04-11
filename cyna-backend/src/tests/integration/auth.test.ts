@@ -3,8 +3,9 @@ import app from '../../app'; // Votre application Express
 import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
 import { EmailService } from '../../services/email.service'; // Importer pour le mock
+import prisma from '../helpers/prisma.helper'; // Importer l'instance partagée
 
-const prisma = new PrismaClient(); // Pour d'éventuelles vérifications directes en BDD
+// const prisma = new PrismaClient(); // Supprimé
 
 // Simuler (Mock) le EmailService pour ne pas envoyer de vrais emails pendant les tests
 jest.mock('../../services/email.service');

@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">21.05% </span>
+                <span class="strong">22.5% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>8/38</span>
+                <span class='fraction'>9/40</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">21.05% </span>
+                <span class="strong">22.5% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>8/38</span>
+                <span class='fraction'>9/40</span>
             </div>
         
             
@@ -155,47 +155,49 @@
 <a name='L90'></a><a href='#L90'>90</a>
 <a name='L91'></a><a href='#L91'>91</a>
 <a name='L92'></a><a href='#L92'>92</a>
-<a name='L93'></a><a href='#L93'>93</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -251,6 +253,7 @@
 import { OrderService } from './order.service';
 import { OrderStatus } from '@prisma/client';
 import config from '../config';
+import logger from '../config/logger';
 &nbsp;
 // Initialiser Stripe (nécessaire pour construire l'événement)
 let stripe: Stripe | null = null;
@@ -274,8 +277,8 @@ export class WebhookService {
      */
 <span class="fstat-no" title="function not covered" >    static </span>constructWebhookEvent(body: Buffer | string, signature: string): Stripe.Event {
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!stripe || !config.stripeWebhookSecret) {</span>
-<span class="cstat-no" title="statement not covered" >            console.error('Stripe or Webhook Secret not configured.');</span>
-<span class="cstat-no" title="statement not covered" >            throw new Error('Webhook processing configuration error.'); </span>// Erreur serveur interne
+<span class="cstat-no" title="statement not covered" >            logger.error('Stripe or Webhook Secret not configured for webhook construction.');</span>
+<span class="cstat-no" title="statement not covered" >            throw new Error('Webhook processing configuration error.');</span>
         }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        try {</span>
@@ -285,10 +288,10 @@ export class WebhookService {
                 config.stripeWebhookSecret
             );
 <span class="cstat-no" title="statement not covered" >            return event;</span>
-        } catch (err: any) {
-<span class="cstat-no" title="statement not covered" >            console.error(`Webhook signature verification failed: ${err.message}`);</span>
-            // Lever une erreur spécifique ou générique pour le contrôleur
-<span class="cstat-no" title="statement not covered" >            throw new Error(`Webhook Error: ${err.message}`); </span>// Sera attrapé et renverra 400
+        } catch (err: unknown) {
+            const error = <span class="cstat-no" title="statement not covered" >err as Error;</span>
+<span class="cstat-no" title="statement not covered" >            logger.error(`Webhook signature verification failed: ${error.message}`);</span>
+<span class="cstat-no" title="statement not covered" >            throw new Error(`Webhook Error: ${error.message}`);</span>
         }
     }
 &nbsp;
@@ -296,7 +299,7 @@ export class WebhookService {
      * Traite un événement webhook Stripe vérifié.
      */
 <span class="fstat-no" title="function not covered" >    static </span>async handleWebhookEvent(event: Stripe.Event): Promise&lt;void&gt; {
-<span class="cstat-no" title="statement not covered" >        console.log(`Received Stripe webhook event: ${event.type}`);</span>
+<span class="cstat-no" title="statement not covered" >        logger.info(`Received Stripe webhook event: ${event.type}`, { eventId: event.id });</span>
 &nbsp;
         // Gérer l'événement payment_intent
 <span class="cstat-no" title="statement not covered" >        if (event.type.startsWith('payment_intent.')) {</span>
@@ -304,38 +307,38 @@ export class WebhookService {
             const orderId = <span class="cstat-no" title="statement not covered" >paymentIntent.metadata?.orderId;</span>
             
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (!orderId) {</span>
-<span class="cstat-no" title="statement not covered" >                console.error('Webhook Error: Missing orderId in PaymentIntent metadata', paymentIntent.id);</span>
+<span class="cstat-no" title="statement not covered" >                logger.error('Webhook Error: Missing orderId in PaymentIntent metadata', { paymentIntentId: paymentIntent.id });</span>
 <span class="cstat-no" title="statement not covered" >                return; </span>// Ignorer si on ne peut pas lier à une commande
             }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            switch (event.type) {</span>
                 case 'payment_intent.succeeded':
-<span class="cstat-no" title="statement not covered" >                    console.log(`PaymentIntent ${paymentIntent.id} succeeded for order ${orderId}.`);</span>
+<span class="cstat-no" title="statement not covered" >                    logger.info(`PaymentIntent ${paymentIntent.id} succeeded for order ${orderId}.`);</span>
                     // Paiement réussi : Mettre à jour la commande à ACTIVE (ou autre statut pertinent)
 <span class="cstat-no" title="statement not covered" >                    await OrderService.updateOrderStatus(orderId, paymentIntent.id, OrderStatus.ACTIVE);</span>
                     // TODO: Envoyer email de confirmation de commande, activer services, etc.
 <span class="cstat-no" title="statement not covered" >                    break;</span>
                 case 'payment_intent.payment_failed':
-<span class="cstat-no" title="statement not covered" >                    console.log(`PaymentIntent ${paymentIntent.id} failed for order ${orderId}. Reason: ${paymentIntent.last_payment_error?.message}`);</span>
+<span class="cstat-no" title="statement not covered" >                    logger.warn(`PaymentIntent ${paymentIntent.id} failed for order ${orderId}.`, { reason: paymentIntent.last_payment_error?.message });</span>
                     // Paiement échoué : Mettre à jour la commande à FAILED
 <span class="cstat-no" title="statement not covered" >                    await OrderService.updateOrderStatus(orderId, paymentIntent.id, OrderStatus.FAILED);</span>
                     // TODO: Envoyer email informant de l'échec ?
 <span class="cstat-no" title="statement not covered" >                    break;</span>
                 case 'payment_intent.processing':
-<span class="cstat-no" title="statement not covered" >                    console.log(`PaymentIntent ${paymentIntent.id} processing for order ${orderId}.`);</span>
+<span class="cstat-no" title="statement not covered" >                    logger.info(`PaymentIntent ${paymentIntent.id} processing for order ${orderId}.`);</span>
                      // Optionnel: Mettre à jour la commande à PROCESSING si ce statut est utilisé
                     // await OrderService.updateOrderStatus(orderId, paymentIntent.id, OrderStatus.PROCESSING);
 <span class="cstat-no" title="statement not covered" >                    break;</span>
                 case 'payment_intent.canceled': // Peut arriver si annulé avant succès/échec
-<span class="cstat-no" title="statement not covered" >                    console.log(`PaymentIntent ${paymentIntent.id} canceled for order ${orderId}.`);</span>
+<span class="cstat-no" title="statement not covered" >                    logger.info(`PaymentIntent ${paymentIntent.id} canceled for order ${orderId}.`);</span>
 <span class="cstat-no" title="statement not covered" >                     await OrderService.updateOrderStatus(orderId, paymentIntent.id, OrderStatus.CANCELLED);</span>
 <span class="cstat-no" title="statement not covered" >                    break;</span>
                 // Ajouter d'autres événements si nécessaire (ex: charge.refunded)
                 default:
-<span class="cstat-no" title="statement not covered" >                    console.log(`Unhandled payment_intent event type: ${event.type}`);</span>
+<span class="cstat-no" title="statement not covered" >                    logger.info(`Unhandled payment_intent event type: ${event.type}`, { eventId: event.id });</span>
             }
         } else {
-<span class="cstat-no" title="statement not covered" >             console.log(`Unhandled event type: ${event.type}`);</span>
+<span class="cstat-no" title="statement not covered" >             logger.info(`Unhandled event type: ${event.type}`, { eventId: event.id });</span>
         }
         // Confirmer à Stripe que l'événement a été reçu (le contrôleur renverra 200)
     }
@@ -346,7 +349,7 @@ export class WebhookService {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-04-08T11:54:38.345Z
+                at 2025-04-11T13:22:24.660Z
             </div>
         <script src="../prettify.js"></script>
         <script>

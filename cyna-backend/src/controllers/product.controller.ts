@@ -10,12 +10,13 @@ export class ProductController {
    */
   static async getAllProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // req.query contient les valeurs validées et avec défauts par Zod
-      const options = req.query as unknown as GetProductsOptions;
+      // Utiliser les données validées
+      const options = req.validatedData?.query as unknown as GetProductsOptions;
+      if (!options) throw new ApiError(500, 'Validated query data not found.');
       const result = await ProductService.getAllProducts(options);
       res.status(200).json(result);
     } catch (error) {
-      next(error); // Passe l'erreur au middleware de gestion d'erreurs
+      next(error);
     }
   }
 
@@ -25,25 +26,16 @@ export class ProductController {
    */
   static async getProductById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const productId = req.params.id;
+      // Utiliser les données validées
+      const productId = req.validatedData?.params?.id;
+      if (!productId) throw new ApiError(500, 'Validated product ID not found.');
       const product = await ProductService.getProductById(productId);
-
       if (!product) {
-        // Lancer une erreur standard si le produit n'est pas trouvé
-        const error = new Error(`Product with ID ${productId} not found`);
-        // Vous pourriez vouloir définir un statut spécifique pour cette erreur
-        // (error as any).statusCode = 404;
-        // Ou utiliser une classe d'erreur personnalisée plus tard
-        // throw new NotFoundError(`Product with ID ${productId} not found`);
         return next(new ApiError(404, `Product with ID ${productId} not found`));
       }
-
       res.status(200).json(product);
     } catch (error) {
-      // S'assurer que les erreurs inattendues sont passées au middleware
-      if (!res.headersSent) {
-          next(error);
-      }
+      next(error);
     }
   }
 
@@ -55,8 +47,10 @@ export class ProductController {
    */
   static async createProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // Données validées par Zod
-      const newProduct = await ProductService.createProduct(req.body);
+      // Utiliser les données validées
+      const productData = req.validatedData?.body;
+      if (!productData) throw new ApiError(500, 'Validated product data not found.');
+      const newProduct = await ProductService.createProduct(productData);
       res.status(201).json(newProduct);
     } catch (error) {
       next(error);
@@ -69,9 +63,11 @@ export class ProductController {
    */
   static async updateProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const productId = req.params.id;
-      // Données validées par Zod
-      const updatedProduct = await ProductService.updateProduct(productId, req.body);
+      // Utiliser les données validées
+      const productId = req.validatedData?.params?.id;
+      const productData = req.validatedData?.body;
+      if (!productId || !productData) throw new ApiError(500, 'Validated product ID or data not found.');
+      const updatedProduct = await ProductService.updateProduct(productId, productData);
       res.status(200).json(updatedProduct);
     } catch (error) {
       next(error);
@@ -84,8 +80,9 @@ export class ProductController {
    */
   static async deleteProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const productId = req.params.id;
-      // ID validé par Zod
+      // Utiliser les données validées
+      const productId = req.validatedData?.params?.id;
+      if (!productId) throw new ApiError(500, 'Validated product ID not found.');
       await ProductService.deleteProduct(productId);
       res.status(204).send();
     } catch (error) {
