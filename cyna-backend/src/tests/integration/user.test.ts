@@ -203,14 +203,22 @@ describe('User Profile & Address API Endpoints', () => {
             // (Nécessite de créer un deuxième utilisateur et son adresse)
 
             it('DELETE /me/addresses/:addressId - should delete the address', async () => {
-                const response = await request(app)
+                const deleteResponse = await request(app)
                     .delete(`/api/users/me/addresses/${createdAddressId}`)
                     .set('Authorization', `Bearer ${userToken}`);
-                expect(response.status).toBe(204);
+                
+                // Vérification explicite du statut DELETE
+                expect(deleteResponse.status).toBe(204);
 
+                // Petite pause pour s'assurer que la BDD a le temps de traiter (pas idéal, mais pour tester)
+                await new Promise(resolve => setTimeout(resolve, 50)); 
+
+                // Vérifier qu'elle n'est plus récupérable
                 const getAttempt = await request(app)
                     .get(`/api/users/me/addresses/${createdAddressId}`)
                     .set('Authorization', `Bearer ${userToken}`);
+                
+                // S'attendre maintenant au 404
                 expect(getAttempt.status).toBe(404);
             });
         });

@@ -16,6 +16,14 @@ interface Config {
   stripePublishableKey: string;
   stripeSecretKey: string;
   stripeWebhookSecret: string;
+  // Variables Email
+  smtpHost?: string;
+  smtpPort?: number;
+  smtpUser?: string;
+  smtpPass?: string;
+  emailFrom: string;
+  // URL Frontend (pour les liens dans les emails)
+  frontendUrl: string;
 }
 
 // Basic validation for essential variables
@@ -59,6 +67,13 @@ const config: Config = {
   stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY || '',
   stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',
   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
+  // Charger les variables SMTP (optionnelles, Ethereal sinon)
+  smtpHost: process.env.SMTP_HOST,
+  smtpPort: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : undefined,
+  smtpUser: process.env.SMTP_USER,
+  smtpPass: process.env.SMTP_PASS,
+  emailFrom: process.env.EMAIL_FROM || 'no-reply@cyna.app', // Adresse expéditeur par défaut
+  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000', // URL frontend par défaut
 };
 
 // Validation simple pour les clés essentielles
@@ -78,6 +93,12 @@ if (!config.stripeSecretKey) {
 }
 if (!config.stripeWebhookSecret) {
     console.warn('WARNING: STRIPE_WEBHOOK_SECRET is not defined in .env. Stripe webhooks will fail verification.');
+}
+if (!config.emailFrom) {
+    console.warn('WARNING: EMAIL_FROM is not defined in .env. Using default.');
+}
+if (!config.frontendUrl) {
+    console.warn('WARNING: FRONTEND_URL is not defined in .env. Using default.');
 }
 
 export default config; 

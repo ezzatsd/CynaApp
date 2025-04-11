@@ -53,45 +53,45 @@ app.get('/', (req: Request, res: Response) => {
 
 // --- Global Error Handler --- 
 app.use((err: Error | ApiError, req: Request, res: Response, next: NextFunction) => {
+  // Toujours logguer l'erreur complète pour le débogage serveur
   logger.error(
-    `${req.method} ${req.originalUrl} - Error: ${err.message}`,
-    { stack: err.stack, statusCode: (err instanceof ApiError) ? err.statusCode : 500 }
+    `Unhandled Error: ${err.message}`, 
+    { path: req.path, method: req.method, stack: err.stack, errorDetails: err } // Inclure l'erreur entière si possible
   );
 
+  // Déterminer le statut et le message à envoyer au client
   let statusCode = 500;
-  let responseBody: { message: string; errors?: any } = { message: 'Internal Server Error' };
+  let clientMessage = 'Internal Server Error';
+  let clientErrors: any = undefined;
 
   if (err instanceof ApiError) {
       statusCode = err.statusCode;
-      // Toujours utiliser le message de l'ApiError si elle est définie, 
-      // même si elle n'est pas "opérationnelle", car c'est souvent voulu (ex: 404)
-      responseBody.message = err.message;
-
-      // Gérer les erreurs de validation Zod spécifiquement SI le message correspond
-      // et que le stack est une string (pour éviter erreurs sur d'autres types d'erreurs)
+      // Utiliser le message de l'ApiError seulement si elle est marquée comme opérationnelle
+      // Ou si le statut n'est PAS 500 (pour les 4xx, on veut souvent le message précis)
+      if (err.isOperational || statusCode !== 500) {
+          clientMessage = err.message;
+      }
+      
+      // Gérer spécifiquement les erreurs de validation Zod formatées
       if (err.message === 'Validation failed' && typeof err.stack === 'string') {
           try {
-              responseBody.errors = JSON.parse(err.stack); 
-          } catch (parseError) { 
-               if (process.env.NODE_ENV !== 'production') {
-                   // Afficher le stack brut en dev si le parsing JSON échoue
-                   responseBody.errors = err.stack;
-               }
-          }
-      } else if (process.env.NODE_ENV !== 'production' && !err.isOperational) {
-          // Inclure le stack pour les autres erreurs non opérationnelles en dev 
-           responseBody.errors = err.stack;
+              clientErrors = JSON.parse(err.stack); 
+          } catch (parseError) { /* Ignorer si ce n'est pas du JSON */ }
       }
-  } else if (process.env.NODE_ENV !== 'production') {
-     responseBody.message = err.message;
-     responseBody.errors = err.stack;
+  }
+
+  // Construire la réponse client
+  const responseBody: { message: string; errors?: any } = { message: clientMessage };
+  if (clientErrors) {
+      responseBody.errors = clientErrors;
   }
 
   if (res.headersSent) {
-    logger.warn('Headers already sent, skipping error response.', { path: req.path });
+    logger.warn('Headers already sent, cannot send error response.', { path: req.path });
     return next(err); 
   }
 
+  // Envoyer la réponse JSON avec le bon statut
   res.status(statusCode).json(responseBody);
 });
 
